@@ -1,21 +1,27 @@
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
+import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from 'rollup-plugin-typescript2';
 
+const packageJson = require('../package.json');
 
 export default {
-  input: ["src/index.ts", "src/Header/index.tsx"],
+  input: 'src/index.ts',
   output: [
     {
-      dir: "build",
-      format: "cjs",
-      sourcemap: true
-    }
+      file: packageJson.main,
+      format: 'cjs',
+      sourcemap: true,
+    },
+    {
+      file: packageJson.module,
+      format: 'esm',
+      sourcemap: true,
+    },
   ],
-  preserveModules: true, // Important if we want to code split
   plugins: [
     peerDepsExternal(),
-    // resolve(),
+    resolve(),
     commonjs(),
     typescript({ useTsconfigDeclarationDir: true }),
   ],
