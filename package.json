@@ -1,6 +1,6 @@
 {
   "name": "omym-library-test",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "React components for SunHammer",
   "repository": "https://github.com/oscarmyepes/library-test.git",
   "author": "Oscar Mauricio Yepes Morato <oscarmyepes@gmail.com>",
@@ -64,7 +64,6 @@
     }
   },
   "main": "build/index.js",
-  "module": "build/index.esm.js",
   "files": [
     "build"
   ],

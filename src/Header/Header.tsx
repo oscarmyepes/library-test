@@ -17,4 +17,4 @@ const Header = ({ text }: HeaderProps) => {
   return <h1 className={classes.myLabel}>{text}</h1>;
 };
 
-export default Header;
+export { Header };

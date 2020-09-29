@@ -2,7 +2,7 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-var Header = require('./Header/Header.js');
+var Header = require('./Header.js');
 
 
 
