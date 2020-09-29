@@ -1,0 +1,31 @@
+{
+  "extends": ["tslint:recommended", "tslint-react-hooks"],
+  "rulesDirectory": [],
+  "rules": {
+    "max-line-length": {
+      "options": [120]
+    },
+    "react-hooks-nesting": "error",
+    "new-parens": true,
+    "arrow-parens": false,
+    "trailing-comma": false,
+    "only-arrow-functions": false,
+    "object-literal-sort-keys": false,
+    "no-arg": true,
+    "no-bitwise": true,
+    "no-conditional-assignment": true,
+    "no-consecutive-blank-lines": false,
+    "no-any": true,
+    "no-console": {
+      "severity": "warning",
+      "options": ["debug", "info", "log", "time", "timeEnd", "trace"]
+    },
+    "no-unused-expression": true,
+    "no-unused-variable": [true, {"ignore-pattern": "^_"}]
+  },
+  "jsRules": {
+    "max-line-length": {
+      "options": [120]
+    }
+  }
+}
