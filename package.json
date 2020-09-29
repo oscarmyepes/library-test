@@ -1,11 +1,11 @@
 {
-  "name": "@sunhammer/ui",
+  "name": "omym-library-test",
   "version": "0.0.0",
   "description": "React components for SunHammer",
-  "repository": "https://github.com/webshopmanager/sunhammer.git",
+  "repository": "https://github.com/oscarmyepes/library-test.git",
   "author": "Oscar Mauricio Yepes Morato <oscarmyepes@gmail.com>",
   "license": "MIT",
-  "private": true,
+  "private": false,
   "engines": {
     "node": ">=10"
   },
