@@ -1,6 +1,6 @@
 {
   "name": "omym-create-lib",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "React components for SunHammer",
   "repository": "https://github.com/webshopmanager/sunhammer.git",
   "author": "Oscar Mauricio Yepes Morato <oscarmyepes@gmail.com>",
