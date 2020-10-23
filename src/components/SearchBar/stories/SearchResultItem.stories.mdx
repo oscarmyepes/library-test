@@ -1,0 +1,126 @@
+import { Meta, Story, Canvas, ArgsTable } from '@storybook/addon-docs/blocks';
+import SearchBar from '../SearchBar';
+import SearchResultItem from '../SearchResultItem';
+import { ResultItemComp, VisisbleFieldComp } from './NestedInterfaces';
+import { createResultItem } from '../__mocks__/searchResults';
+
+<Meta
+  title="Components/SearchBar/SearchResultItem"
+  component={SearchResultItem}
+/>
+
+export const Template = (args) => <SearchResultItem {...args} />;
+
+# SearchResultItem
+
+Component used to show the product summary in a resul list.
+
+## Import styles
+
+To use the basic styles provided, please import our generated css:
+
+```
+import "sunhammer-ui/build/index.css";
+```
+
+## Basic
+
+<Canvas>
+  <Story
+    name="Basic"
+    args={{
+      data: createResultItem(),
+    }}
+  >
+    {(args) => <SearchResultItem {...args} />}
+  </Story>
+</Canvas>
+
+## Styled
+
+<Canvas>
+  <Story
+    name="Styled"
+    args={{
+      data: createResultItem(),
+      styled: true,
+    }}
+  >
+    {(args) => <SearchResultItem {...args} />}
+  </Story>
+</Canvas>
+
+## Styled custom labels
+
+If you want to customize what information is shown, you can do it pasing a prop with visible fields.
+
+- The **title** will be always the first text and will be rendered using H2 tag.
+- Labels could be configured passing an array of objects to especify the property of the response you want to use and what prefix should be used:
+
+`[{prop: 'brand_name', label: "Brand: "}]`
+
+- Finally the price will be placed at the right side of the summary and we only allow **price** and **sale** properties, where price is the original price and sale is the current price with discount if applicable.
+
+<Canvas>
+  <Story
+    name="Styled with custom labels"
+    args={{
+      data: { ...createResultItem(), sale: 100.5, price: 0 },
+      visibleFields: [
+        { prop: 'title' },
+        { prop: 'condition', label: 'CONDITION: ' },
+        { prop: 'remarks', label: 'REMARKS: ' },
+        { prop: 'brand_name', label: 'BRAND: ' },
+        { prop: 'dealerid', label: 'PRODUCT #: ' },
+        { prop: 'sale' },
+        { prop: 'price', label: 'was ' },
+      ],
+      styled: true,
+    }}
+  >
+    {(args) => <SearchResultItem {...args} />}
+  </Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={SearchResultItem} />
+
+## ResultItem
+
+<ArgsTable of={ResultItemComp} />
+
+## VisisbleField
+
+<ArgsTable of={VisisbleFieldComp} />
+
+## ClassNames you can override
+
+You can pass a className to the root element to customize styles:
+
+```
+<SearchResultItem className="my-class-name" />
+```
+
+Also, you can override styles using specific class names.
+For this component we defined a pattern for each label/text:
+
+`Sui-SearchResultItem--{propName}`
+
+Where _{propName}_ is any prop in [ResultItem](#resultitem) interface
+
+Example:
+
+```
+// Class for the image placed at the left side
+.Sui-SearchResultItem--image {...}
+
+// Class for the product title
+.Sui-SearchResultItem--title {...}
+
+// Class for current price
+.Sui-SearchResultItem--sale {...}
+
+```
+
+If you want to change the layout of the lables contaoner you can use `.Sui-SearchResultItem--label-container` class

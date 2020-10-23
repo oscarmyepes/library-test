@@ -1,0 +1,132 @@
+@import '../../styles/variables';
+@import '../../styles/inputs';
+@import '../../styles/buttons';
+
+// Basic styles
+.searchBarContainer {
+  position: relative;
+}
+
+.searchBarInputContainer {
+  display: flex;
+}
+
+.inputContainer {
+  display: flex;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input {
+  width: 100%;
+  box-sizing: border-box;
+  padding-right: 30px;
+}
+
+.clearIcon {
+  position: absolute;
+  right: 0px;
+  background-color: transparent;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.suggestionContainer {
+  overflow-y: auto;
+  position: absolute;
+  z-index: 999;
+  width: 100%;
+  background-color: white;
+}
+
+.focused {
+  :global .Sui-SearchBar--result-item {
+    background-color: var(--sui-secondary-color);
+  }
+}
+
+.link {
+  color: inherit;
+  text-decoration: unset;
+}
+
+// Styled classes
+
+.StyledResultItem {
+  background-color: white;
+  &:hover {
+    background-color: var(--sui-secondary-color-light);
+  }
+  margin-bottom: 0.5rem;
+}
+
+.StyledButton {
+  width: 25%;
+}
+
+.StyledProgressBar {
+  height: 3px;
+  width: 100%;
+  margin: 0;
+  background-color: var(--sui-primary-color-light);
+  display: flex;
+  position: absolute;
+  top: -3px;
+  &:before {
+    background-color: var(--sui-primary-color);
+    height: 3px;
+    width: 100%;
+    margin: 0;
+    content: '';
+    -webkit-animation: running-progress 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    animation: running-progress 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+}
+
+@keyframes running-progress {
+  0% {
+    margin-left: 0px;
+    margin-right: 100%;
+  }
+  50% {
+    margin-left: 25%;
+    margin-right: 0%;
+  }
+  100% {
+    margin-left: 100%;
+    margin-right: 0;
+  }
+}
+
+.StyledSuggestionContainer {
+  background-color: var(--sui-secondary-color-light);
+}
+
+.StyledHeader {
+  margin: 0;
+  background-color: var(--sui-primary-color-light);
+  color: white;
+  padding: 0.25rem 0.5rem;
+}
+
+.StyledList {
+  padding: 0.25rem 0.5rem;
+}
+
+.StyledListTitle {
+  border-bottom: 1px solid grey;
+  margin: 0.25rem 0 0.5rem 0;
+  padding-bottom: 0.25rem;
+  text-transform: uppercase;
+}
+
+.StyledNoResults {
+  @extend .StyledHeader;
+  background-color: var(--sui-danger-color);
+}

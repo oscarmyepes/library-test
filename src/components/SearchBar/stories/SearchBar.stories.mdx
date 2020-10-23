@@ -1,0 +1,107 @@
+import { Meta, Story, Canvas, ArgsTable } from '@storybook/addon-docs/blocks';
+import SearchBar from '../SearchBar';
+import { ResultItemComp, VisisbleFieldComp } from './NestedInterfaces';
+import styles from './story.scss';
+
+<Meta title="Components/SearchBar/SearchBar" component={SearchBar} />
+
+export const Template = (args) => <SearchBar {...args} />;
+
+# SearchBar
+
+SearchBar also called WSS (Web Shop Search) uses an incremental search philosophy and starts sending search requests once the user has typed in 3 or more characters into the search bar (the number of characters can be configured).
+
+Features:
+
+- Customers can configure what fields should appear in the result items list by sending a property **visibleFields** with the fields and labels to be displayed.
+  _Example:_
+
+```
+const visibleFields = [
+  { prop: 'title' },
+  { prop: 'brand_name', label: 'BRAND: ' },
+  { prop: 'dealerid', label: 'PRODUCT #: ' },
+  { prop: 'sale' },
+  { prop: 'price' },
+]
+
+```
+
+- Text in the result list can be configured as well, Header result (like SHOWING RESULTS FOR: {search}), list title (Products) can be configured.
+- Customers can navigate results using arrow keys (↑↓) and select a product by hitting the Enter key.
+
+## Import styles
+
+To use the basic styles provided, please import our generated css:
+
+```
+import "sunhammer-ui/build/index.css";
+```
+
+## Basic
+
+<Canvas>
+  <Story
+    name="Basic"
+    args={{ site: 'wss', maxResults: 8, showCloseIcon: false }}
+  >
+    {(args) => <SearchBar {...args} />}
+  </Story>
+</Canvas>
+
+## Styled
+
+<Canvas>
+  <Story
+    name="Styled"
+    args={{
+      className: styles.Styled,
+      site: 'wss',
+      maxResults: 4,
+      styled: true,
+      listTitle: 'Products',
+      resultsHeaderText: 'SHOWING REULTS FOR: ',
+      showCloseIcon: true,
+    }}
+  >
+    {(args) => <SearchBar {...args} />}
+  </Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={SearchBar} />
+
+## ResultItem
+
+<ArgsTable of={ResultItemComp} />
+
+## VisisbleField
+
+<ArgsTable of={VisisbleFieldComp} />
+
+## ClassNames you can override
+
+You can pass a className to the root element to customize styles:
+
+```
+<SearchBar className="my-class-name" />
+```
+
+Also, you can override styles using specific class names:
+
+```
+.Sui-SearchBar--suggestions-container {...}
+
+.Sui-SearchBar--result-item {...}
+
+.Sui-SearchBar--result-header {...}
+
+.Sui-SearchBar--list-title {...}
+
+.Sui-SearchBar--search-button {...}
+
+.Sui-SearchBar--search-input {...}
+
+.Sui-SearchBar--loading-indicator {...}
+```

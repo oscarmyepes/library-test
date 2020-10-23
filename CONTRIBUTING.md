@@ -1,54 +1,189 @@
 # Contributing
 
 ## Project setup
+
 1. Fork and clone the repo
 
-2. To Install dependencies run:
+2. Create a `.env` and `.env.test` file in the root directory
+
+```
+API_URL=http://api-url.com
+```
+
+Confirm with a fellow developer what variables should be set in this file.
+
+3. To Install dependencies run:
+
 ```
 yarn
 ```
 
+4. To launch the development server run:
+
+```
+yarn storybook
+or
+yarn dev
+```
+
+Note: If you want to use Docker you can skip points 3 and 4 and follow _Using Docker as development environment_ instructions.
+
 ## Development
+
 1. If you want to create a new component, please follow the next steps:
 
-- Create a new folder inside `/src` with the name of your component
-- Create 4 files
-    - `ComponentName.tsx` (this file will contain the component logic)
-    - `ComponentName.stories.tsx` (this file will contain the logic to document the component using storybook)
-    - `ComponentName.test.tsx` (File containing unit tests for the new component)
-    - `index.tsx` (File to export the component)
+- Create a new folder inside `/src/components` with the name of your component
+- Create the followig structure:
 
-Note: We are using `react-jss`, you can add the styles in the component folder or create a new file  `ComponentName.styles.tsx` and import it into the main component file.
+```
+./src/MyNewComponent
+  │
+  └─ ./__mocks__/ (Folder with mocked data to run unit tests)
+  |   │
+  |   └─ [mockFileName].ts
+  |
+  └─ ./models/ (Folder to create all interfaces that will be used in the new component)
+  |   │
+  |   └─ index.ts
+  |
+  └─ ./stories/ (Folder to create all stories to document each component using storybook .mdx files)
+  |   │
+  |   └─ [ComponentName].stories.mdx
+  |   └─ NestedInterfaces.tsx (File containing dummy components to be used in ArgsTable to show nested interfaces)
+  |
+  └─ [ComponentName].tsx (File containing the component logic)
+  └─ [ComponentName].test.tsx (File containing unit tests for the new component)
+  └─ index.scss (Styles for the new component using SASS modules)
+  └─ index.tsx (File to export the component)
 
-2. If you want to fix a bug or do a change in an existing component, please find find the component, make the change and add proper unit tests and cases to storybook file.
+```
 
+Note: We are using `sass modules`, all styles must be in a `.scss` file and then you can use modules importing styles in this way:
 
+```
+// ./styles.scss
+.root {
+  color: #FEFEFE;
+}
+.button {
+  background-color: #FAFAFA;
+}
+```
+
+```
+// ./MyNewComponent.tsx
+import styles from './styles.scss';
+...
+<div className={styles.root}>
+  <h1>This is my component</h1>
+  <button className={styles.button}>Button</button>
+</div>
+```
+
+2. If you want to fix a bug or change an existing component, please find the component, make the change and add proper unit tests and cases to storybook file.
 
 3. To test your component and see how it looks in storybook run:
+
 ```
 yarn storybook
 ```
 
-This will run a local server in `http://localhost:6006/`
-When you open that page in your browser, you should be able to see the list of components and test different scenarios changing the input props.
+This will start a local server in `http://localhost:6006/`.
+
+When you open that URL in your browser, you should be able to see the list of components and test different scenarios changing the input props.
 
 4. Run unit tests:
+
 - To run all tests once use:
+
 ```
 yarn test
 ```
 
-- To run tests in whach mode:
+- To run tests in watch mode:
+
 ```
-test:watch
-``` 
+yarn test:watch
+```
+
+- Debug unit tests
+
+You can debug unit tests pressing F5 key or any shortcut you use to launch the debug mode in VSCode.
+
+## Theming
+
+Our default theme is defined using CSS variables.
+In `./src/styles/` folder you can find files to style different components.
+Styles for components in `./src/styles/` folder should be basic styles not related to layout or responsive design. In that folder we can add styles for font colors, shadows, borders, etc.
+
+Important variables like **primary-color**, **scondary-color** should be defined in `./src/styles/_variables.scss` file, we use CSS variables to easily change the values for each variable.
+
+Every variable must have the prefix `sui-`, for instance the variable for our primary color is defined as `--sui-primary-color`.
+
+## Using Docker as development environment
+
+Run:
+
+```
+docker-compose up
+```
+
+Or if you want to run it in detached mode:
+
+```
+docker-compose up -d
+```
+
+This will start a local server in `http://localhost:6006/`
+
+2. To run commands inside the container use:
+
+```
+docker-compose run sunhammer [command]
+```
+
+> Example:
+
+- Run tests:
+
+```
+docker-compose run sunhammer yarn test
+```
+
+- Install a new dependency
+
+```
+docker-compose run sunhammer yarn add new-depedency
+```
+
+**Imporant:** If you have issues with docker regarding `node_modules` path or something related, please delete the node_modules folder using your admin account and then try again.
 
 ## Build and publish
+
 You can generate the distribution files running:
+
 ```
 yarn build
 ```
 
 This will create a `/build` folder in the root at the same level of `/src` folder.
 
-TODO instructions to publish
+> TODO instructions to publish
+
+## Playground
+
+We have a playground project inside `./playground` folder. In that project you can import `sunhammer-ui` library and test how it works in the same way other developers will use the library.
+
+To use this playground and test your local changes in the library follow the next stpes:
+
+1. Publish sunhammer-ui library locally
+
+`yarn publish:local`
+
+2. Start the playground local server:
+
+`yarn playground:start`
+
+This will start a server in `http://localhost:8080/` where you can see how each component can be included in a normal web application.
+
+**Note:** Every time you make a change in the library, you'll have to run the above commands to update the sunhammer-ui dependency in playground.

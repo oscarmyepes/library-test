@@ -1,0 +1,166 @@
+import { Meta, Story, Canvas, ArgsTable } from '@storybook/addon-docs/blocks';
+import FitmentSelector from '../FitmentSelector';
+import {
+  CustomSelectComp,
+  SelectedValuesComp,
+  LabelComp,
+} from './NestedInterfaces';
+import Select from 'react-select';
+import styles from './story.scss';
+
+<Meta title="Components/FitmentSelector" component={FitmentSelector} />
+
+export const Template = (args) => <FitmentSelector {...args} />;
+
+# FitmentSelector
+
+FitmentSelector component is to allow customers to select fitment of their vehicle. It consists of letting a customer select a Year, Make, Model, etc, to start filtering out search results.
+
+## Import styles
+
+To use the basic styles provided, please import our generated css:
+
+```
+import "sunhammer-ui/build/index.css";
+```
+
+## Basic
+
+<Canvas>
+  <Story name="Basic" args={{}}>
+    {(args) => <FitmentSelector {...args} />}
+  </Story>
+</Canvas>
+
+## Styled
+
+If you pass the `styled` prop, you will see the component with basic styles, like spaces between drop-downs, colors and width/heights set with minimum values.
+
+<Canvas>
+  <Story name="Styled" args={{ styled: true }}>
+    {(args) => <FitmentSelector {...args} />}
+  </Story>
+</Canvas>
+
+## Using custom select (react-select)
+
+If you want to use a custom DropDown/Autocomplete/Select you can pass that component in the `components` property:
+
+<Canvas>
+  <Story
+    name="Custom select"
+    args={{
+      className: 'react-select-custom',
+      styled: true,
+      components: {
+        select: (props) => {
+          const options = props.options?.map((item) => ({
+            value: item.id,
+            label: item.name,
+          }));
+          return (
+            <Select
+              className={'sectionTest'}
+              styles={{
+                container: (base) => ({
+                  ...base,
+                  minWidth: '120px',
+                  marginRight: '5px',
+                }),
+              }}
+              options={options}
+              onChange={(data) => props.onChange(data?.value)}
+              value={
+                props.value
+                  ? options.find((item) => item.value === props.value)
+                  : null
+              }
+              placeholder={props.label.name}
+              isDisabled={!props.options?.length}
+              menuPortalTarget={document.querySelector('body')}
+            ></Select>
+          );
+        },
+      },
+    }}
+  >
+    {(args) => <FitmentSelector {...args} />}
+  </Story>
+</Canvas>
+
+_Example using 'react-select'_
+
+```
+<FitmentSelector
+  ...
+  components={{
+    select: (props) => {
+      const options = props.options?.map((item) => ({
+        value: item.id,
+        label: item.name,
+      }));
+      return (
+        <Select
+          className={'sectionTest'}
+          styles={{
+            container: (base) => ({
+              ...base,
+              minWidth: '120px',
+              marginRight: '5px',
+            }),
+          }}
+          options={options}
+          onChange={(data) => props.onChange(data?.value)}
+          value={
+            props.value
+              ? options.find((item) => item.value === props.value)
+              : null
+          }
+          isDisabled={!props.options?.length}
+          menuPortalTarget={document.querySelector('body')}
+        ></Select>
+      );
+    },
+  }}
+/>
+```
+
+## Props
+
+<ArgsTable of={FitmentSelector} />
+
+#### SelectedValues
+
+<ArgsTable of={SelectedValuesComp} />
+
+#### CustomSelect
+
+<ArgsTable of={CustomSelectComp} />
+
+#### Label
+
+<ArgsTable of={LabelComp} />
+
+## ClassNames you can override
+
+You can pass a className to the root element to customize styles:
+
+```
+<FitmentSelector className="my-class-name" />
+```
+
+Also, you can override styles using specific class names:
+
+```
+// Class for each select element
+.Sui-FitmentSelector--select {...}
+
+// Class for buttons container
+.Sui-FitmentSelector--actions {...}
+
+// Class for seacrh button
+.Sui-FitmentSelector--searchBtn {...}
+
+// Class for clear button
+.Sui-FitmentSelector--clearBtn {...}
+```

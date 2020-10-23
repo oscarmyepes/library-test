@@ -1,0 +1,65 @@
+@import '../../styles/variables';
+@import '../../styles/buttons';
+@import '../../styles/select';
+
+$breakpoint: 500px;
+.root {
+  display: flex;
+  @media (max-width: $breakpoint) {
+    flex-direction: column;
+  }
+}
+
+.vertical {
+  flex-direction: column;
+}
+
+.actions {
+  display: flex;
+  @media (max-width: $breakpoint) {
+    flex-direction: column;
+  }
+}
+
+.actionsVertical {
+  flex-direction: column;
+}
+
+// Styles applied only when user sends styled flag as true
+$inputs-width: 7rem;
+@mixin styled-button {
+  min-width: $inputs-width;
+}
+@mixin styled-responsive {
+  margin-right: 0;
+  margin-bottom: 0.5rem;
+}
+
+.StyledSelect {
+  margin-right: 0.5rem;
+  min-width: $inputs-width + 1.5rem;
+  @media (max-width: $breakpoint) {
+    @include styled-responsive;
+  }
+}
+
+.StyledSelectVertical {
+  @include styled-responsive;
+}
+
+.StyledSearchBtn {
+  @include styled-button;
+  margin-bottom: 0;
+  margin-right: 0.5rem;
+  @media (max-width: $breakpoint) {
+    @include styled-responsive;
+  }
+}
+
+.StyledSearchBtnVertical {
+  @include styled-responsive;
+}
+
+.StyledClearBtn {
+  @include styled-button;
+}

@@ -1,0 +1,177 @@
+button {
+  cursor: pointer;
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.sunhammer {
+  @media (max-width: 933px) {
+    flex-direction: column;
+    .Sui-FitmentSelector--select {
+      margin-right: 0;
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+.rivaracing {
+  .Sui-FitmentSelector--select {
+    border-radius: 0;
+    background: #fff;
+    width: 180px;
+    height: 30px;
+    border: 1px solid #222;
+    margin-right: 5px;
+    grid-area: select;
+    &:disabled {
+      background: #ddd;
+    }
+  }
+
+  .Sui-FitmentSelector--searchBtn {
+    text-transform: uppercase;
+    font-weight: 700;
+    border: 1px solid #222;
+    text-shadow: -1px 1px 1px rgba(0, 0, 0, 0.4);
+    padding: 7px 5px;
+    border-radius: 3px;
+    box-shadow: inset 0px 0px 3px 4px rgba(255, 255, 255, 0.26);
+    font-family: 'Play', sans-serif;
+    color: #fff;
+    display: inline-block;
+    margin: 0;
+    background: #33b90f;
+    margin-right: 5px;
+  }
+
+  .Sui-FitmentSelector--clearBtn {
+    text-transform: uppercase;
+    font-weight: 700;
+    border: 1px solid #222;
+    text-shadow: -1px 1px 1px rgba(0, 0, 0, 0.4);
+    padding: 7px 5px;
+    border-radius: 3px;
+    box-shadow: inset 0px 0px 3px 4px rgba(255, 255, 255, 0.26);
+    font-family: 'Play', sans-serif;
+    color: #fff;
+    display: inline-block;
+    margin: 0;
+    background: #d90000;
+  }
+
+  @media (max-width: 933px) {
+    flex-wrap: wrap;
+    .Sui-FitmentSelector--select {
+      flex: 1;
+    }
+    .Sui-FitmentSelector--actions {
+      width: 100%;
+      margin-top: 10px;
+      justify-content: space-between;
+    }
+    .Sui-FitmentSelector--searchBtn {
+      margin-right: unset;
+    }
+    .Sui-FitmentSelector--searchBtn,
+    .Sui-FitmentSelector--clearBtn {
+      width: 48%;
+    }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    .Sui-FitmentSelector--select {
+      width: 100%;
+      display: block;
+      margin: 5px 0;
+      font-size: 1.2rem;
+      min-height: 45px;
+    }
+    .Sui-FitmentSelector--searchBtn,
+    .Sui-FitmentSelector--clearBtn {
+      font-size: 18px;
+    }
+  }
+}
+
+.ktperformance {
+  background-color: #2b2b2a;
+  display: flex;
+  align-items: center;
+  .label {
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    color: #00a4ff;
+    margin-left: 10px;
+    span {
+      color: #fff;
+      font-weight: 700;
+    }
+  }
+  .fitment-selector {
+    margin-left: 1.25em;
+  }
+  .Sui-FitmentSelector--select {
+    width: 108px;
+    max-width: 108px;
+    font-size: 14px;
+    border-radius: 0;
+    font-family: 'Oswald';
+    text-transform: uppercase;
+    margin-right: 2px;
+    height: 31px;
+  }
+  .Sui-FitmentSelector--searchBtn {
+    margin: 0 0.25em;
+    border: none;
+    padding: 8px 25px;
+    background: linear-gradient(to bottom, #00a4ff 0%, #0080c8 100%);
+    border-radius: 0;
+    font-family: 'Oswald', sans-serif;
+    color: #fff;
+  }
+  .Sui-FitmentSelector--clearBtn {
+    margin: 0 0.25em;
+    border: none;
+    padding: 8px 25px;
+    color: #ccc !important;
+    background: transparent;
+    float: right;
+    border-radius: 0;
+    font-family: 'Oswald', sans-serif;
+  }
+
+  @media (max-width: 882px) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0 10px;
+    .label {
+      margin-left: 0;
+    }
+    .fitment-selector {
+      flex-direction: column;
+      width: 100%;
+      margin-left: 0;
+    }
+    .Sui-FitmentSelector--select {
+      width: 100%;
+      max-width: 100%;
+      margin-bottom: 10px;
+    }
+    .Sui-FitmentSelector--actions {
+      justify-content: flex-end;
+      margin-bottom: 10px;
+      .Sui-FitmentSelector--clearBtn {
+        margin-right: 0;
+      }
+    }
+  }
+}
+
+///////////////////////////////////// Search bar
+
+.Sui-SearchBar--suggestions-container {
+  max-height: calc(100vh - 250px);
+}

@@ -1,13 +1,7 @@
 {
-  "extends": [
-    "tslint:recommended",
-    "tslint-react-hooks",
-    "tslint-react",
-    "tslint-react-a11y"
-  ],
+  "extends": ["tslint:recommended", "tslint-react-hooks"],
   "rulesDirectory": [],
   "rules": {
-    "cyclomatic-complexity": [true, 15],
     "max-line-length": {
       "options": [120]
     },
@@ -16,7 +10,7 @@
     "arrow-parens": false,
     "trailing-comma": false,
     "only-arrow-functions": false,
-    "object-literal-sort-keys": true,
+    "object-literal-sort-keys": false,
     "no-arg": true,
     "no-bitwise": true,
     "no-conditional-assignment": true,
@@ -26,9 +20,8 @@
       "severity": "warning",
       "options": ["debug", "info", "log", "time", "timeEnd", "trace"]
     },
-    "no-unused-expression": true,
-    "react-a11y-no-onchange": false,
-    "jsx-no-lambda": false
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
   },
   "jsRules": {
     "max-line-length": {

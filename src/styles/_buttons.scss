@@ -1,0 +1,17 @@
+@import './variables';
+
+:global .SuiButton {
+  cursor: pointer;
+  border: none;
+  height: var(--sui-input-height);
+  &.primary {
+    background-color: var(--sui-primary-color);
+    color: #fff;
+  }
+  &.secondary {
+    background-color: var(--sui-secondary-color);
+  }
+  &:disabled {
+    opacity: 0.5;
+  }
+}

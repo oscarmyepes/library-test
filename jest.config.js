@@ -15,6 +15,7 @@ module.exports = {
     '<rootDir>/src/**/*.{ts,tsx}',
     '!**/node_modules/**',
     '!**/*.stories.{ts,tsx}',
+    '!**/stories/**/*.{ts,tsx}',
     '!**/index.{ts,tsx}',
   ],
   globals: {
@@ -24,5 +25,9 @@ module.exports = {
         ignoreCodes: [151001],
       },
     },
+  },
+  moduleNameMapper: {
+    '\\.(css|less|scss|sss|styl)$': '<rootDir>/node_modules/jest-css-modules',
+    "(.png|.jpg|.svg)$": "<rootDir>/src/__mocks__/moduleMock.js",
   },
 };

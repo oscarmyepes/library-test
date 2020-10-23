@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <link rel="manifest" href="/static/manifest.json" />
+    <link rel="icon" href="/static/icons/favicon-96x96.png" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <meta name="robots" content="index, follow" />
+
+    <meta name="description" content="{description}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="{title}" />
+    <meta property="og:description" content="{description}" />
+    <meta property="og:site_name" content="{siteTitle}" />
+    <meta name="twitter:card" content="{twitterCardType}" />
+    <meta name="twitter:description" content="{description}" />
+    <meta name="twitter:title" content="{title}" />
+    <meta name="twitter:domain" content="{domain}" />
+    <meta name="theme-color" content="#fff">
+    <title>
+      <%= htmlWebpackPlugin.options.title %>
+    </title>
+  </head>
+
+  <body>
+    <noscript>You should enable Javascrpt on your browser</noscript>
+    <div id="root"></div>
+  </body>
+</html>

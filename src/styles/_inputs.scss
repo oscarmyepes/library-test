@@ -1,0 +1,18 @@
+@import './variables';
+
+:global .SuiInput {
+  border: 1px solid var(--sui-border-input);
+  height: var(--sui-input-height);
+  padding-left: 0.6em;
+  color: #444;
+  box-shadow: 0 1px 0 1px rgba(0, 0, 0, 0.04);
+  border-radius: 0;
+  font-size: 0.9rem;
+  &:hover {
+    border-color: var(--sui-border-input-hover);
+  }
+  &:focus {
+    outline: none;
+    border-color: var(--sui-border-input-hover);
+  }
+}
