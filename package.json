@@ -1,5 +1,5 @@
 {
-  "name": "omym-lib-oct23",
+  "name": "omym-lib-oct232",
   "version": "0.0.1",
   "description": "React components for SunHammer",
   "repository": "https://github.com/webshopmanager/sunhammer.git",
@@ -90,5 +90,8 @@
   "main": "build/index.js",
   "module": "build/index.esm.js",
   "typings": "build/index.d.ts",
-  "style": "build/index.css"
+  "style": "build/index.css",
+  "files": [
+    "build"
+  ]
 }
