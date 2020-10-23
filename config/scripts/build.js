@@ -21,7 +21,7 @@ async function writePackageJsonFile(folder) {
     const packageJson = {
       main: `./index.js`,
       module: `./index.esm.js`,
-      typings: `./index.d.ts`,
+      typings: `../typings/components/${folder}/index.d.ts`,
       style: `./index.css`,
     };
     const packageJsonPath = path.join(`./${COMPONENTS_PATH}`, 'package.json');
