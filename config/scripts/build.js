@@ -1,12 +1,14 @@
+/* eslint-disable no-undef */
+/* eslint-disable @typescript-eslint/no-var-requires */
 const childProcess = require('child_process');
 const { promisify } = require('util');
 const path = require('path');
 const fs = require('fs');
-const fsExtra = require('fs-extra');
 
 const exec = promisify(childProcess.exec);
 
 function log(type, message) {
+  // eslint-disable-next-line no-console
   console[type](message);
 }
 
@@ -17,14 +19,14 @@ async function getAllComponentsParentFolder() {
 
 async function writePackageJsonFile(folder) {
   try {
-    const COMPONENTS_PATH = `build/${folder}`;
+    const COMPONENT_PATH = `build/${folder}`;
     const packageJson = {
       main: `./index.js`,
       module: `./index.esm.js`,
-      typings: `../typings/components/${folder}/index.d.ts`,
       style: `./index.css`,
+      typings: `../typings/components/${folder}/index.d.ts`,
     };
-    const packageJsonPath = path.join(`./${COMPONENTS_PATH}`, 'package.json');
+    const packageJsonPath = path.join(`./${COMPONENT_PATH}`, 'package.json');
 
     log('info', `Writting package.json for ${folder}`);
     await fs.promises.writeFile(
@@ -44,18 +46,6 @@ async function executeRollUpScript(component) {
   log('info', `${component} built`);
 }
 
-async function copyTsDeclarations(folder) {
-  const SOURCE = `./build/components/${folder}`;
-  const DEST = `./build/${folder}`;
-  log('info', `Copying declarations for ${folder}`);
-  fsExtra.copy(SOURCE, DEST, function (err) {
-    if (err) {
-      return log('error', 'An error occured while copying the folder.');
-    }
-    log('info', 'Copy declarations completed');
-  });
-}
-
 async function run() {
   try {
     log('info', `Packaging library`);
@@ -65,7 +55,6 @@ async function run() {
     components.forEach(async (folder) => {
       await executeRollUpScript(folder);
       await writePackageJsonFile(folder);
-      await copyTsDeclarations(folder);
     });
   } catch (error) {
     log('error', error);

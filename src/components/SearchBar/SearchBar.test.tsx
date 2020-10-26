@@ -126,7 +126,6 @@ describe('SearchBar', () => {
   });
 
   it('Should show no results message', async () => {
-    const error = 'My error';
     fetchMock.getOnce(
       `${process.env.SEARCH_API_URL}/products?${stringify(query)}`,
       { result: [] },
@@ -140,4 +139,26 @@ describe('SearchBar', () => {
       expect(getByText(`No results for: ${SEARCH_TEXT}`)).toBeDefined()
     );
   });
+
+  it('Should not call API when user deletes characters from input in less time than keystrokeDelay', async () => {
+    const spyRestFactory = jest.spyOn(restFactory, 'get');
+    const { getByLabelText } = renderSearch({ keystrokeDelay: 5 });
+    const input = getByLabelText('search-input');
+
+    fireEvent.change(input, { target: { value: SEARCH_TEXT } });
+    await delay(1);
+    fireEvent.change(input, { target: { value: SEARCH_TEXT.slice(0, 2) } });
+    await delay(1);
+    fireEvent.change(input, { target: { value: '' } });
+
+    await waitFor(() => expect(spyRestFactory).toHaveBeenCalledTimes(0));
+  });
 });
+
+function delay(amount: number) {
+  return new Promise((resolve) =>
+    setTimeout(() => {
+      resolve();
+    }, amount)
+  );
+}

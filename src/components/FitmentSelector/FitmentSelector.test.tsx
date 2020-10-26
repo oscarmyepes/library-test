@@ -3,6 +3,7 @@ import fetchMock from 'fetch-mock';
 import * as React from 'react';
 import { act } from 'react-dom/test-utils';
 import FitmentSelector from './FitmentSelector';
+import { CustomSelect } from './models';
 import {
   createLabels,
   createMakeLabelData,
@@ -183,27 +184,29 @@ describe('FitmentSelector', () => {
       const { findAllByTestId } = render(
         <FitmentSelector
           components={{
-            select: (props) => (
-              <select
-                {...props}
-                data-testid="custom-select"
-                onChange={(e) => {
-                  onChange(e);
-                  props.onChange(e.currentTarget.value);
-                }}
-              >
-                {(props.options || []).map((option) => (
-                  <option
-                    key={option.id}
-                    role="option"
-                    aria-selected={false}
-                    value={option.id}
-                  >
-                    {option.name}
-                  </option>
-                ))}
-              </select>
-            ),
+            select: function CustomSelect(props: CustomSelect) {
+              return (
+                <select
+                  {...props}
+                  data-testid="custom-select"
+                  onChange={(e) => {
+                    onChange(e);
+                    props.onChange(e.currentTarget.value);
+                  }}
+                >
+                  {(props.options || []).map((option) => (
+                    <option
+                      key={option.id}
+                      role="option"
+                      aria-selected={false}
+                      value={option.id}
+                    >
+                      {option.name}
+                    </option>
+                  ))}
+                </select>
+              );
+            },
           }}
         />
       );
@@ -226,7 +229,7 @@ function getLabelValue(label) {
   switch (label) {
     case 'Year':
       return YEARS[0];
-    case 'Year':
+    case 'Make':
       return MAKERS[0];
     default:
       return null;

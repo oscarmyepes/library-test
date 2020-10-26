@@ -3,12 +3,11 @@
   The files generated with this configuration allows users to 
   import the whole library in this way:
 
-  import { SearchBar, FitmentSelector as SingleFitmentSelector } from "sunhammer-ui";  
+  import { SearchBar, FitmentSelector } from "sunhammer-ui";  
 */
 import rollupCommon from './rollup.common.config';
 import typescript from 'rollup-plugin-typescript2';
-
-const packageJson = require('../../package.json');
+import packageJson from '../../package.json';
 
 export default {
   ...rollupCommon,
@@ -23,6 +22,11 @@ export default {
       file: packageJson.module,
       format: 'esm',
       sourcemap: true,
+    },
+    {
+      file: packageJson.unpkg,
+      format: 'umd',
+      name: 'Sunhammer',
     },
   ],
   plugins: [

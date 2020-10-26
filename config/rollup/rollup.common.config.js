@@ -12,9 +12,9 @@ export default {
     peerDepsExternal(),
     postcss({
       extract: true,
+      minimize: true,
       modules: true,
       use: ['sass'],
-      minimize: true,
     }),
     images(),
     commonjs(),

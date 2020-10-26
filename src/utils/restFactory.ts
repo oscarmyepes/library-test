@@ -2,13 +2,14 @@ import { GenericObject } from '../models/generic';
 import { stringify } from 'querystring';
 
 export interface IRestFactory {
-  // tslint:disable-next-line
-  get: (path: string, params?: GenericObject) => Promise<any>;
+  get: <T>(path: string, params?: GenericObject) => Promise<T>;
 }
 
 const restService = (): IRestFactory => ({
-  // tslint:disable-next-line
-  async get(path: string, params?: GenericObject): Promise<any> {
+  async get<T>(path: string, params?: GenericObject): Promise<T> {
+    // This try-catch is useful because fetch does not return error when response is not ok
+    // so we want to catch any real error and bad responses.
+    // eslint-disable-next-line no-useless-catch
     try {
       const response = await fetch(`${path}?${stringify(params)}`);
       if (!response.ok) {

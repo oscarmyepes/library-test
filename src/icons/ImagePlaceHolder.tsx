@@ -1,7 +1,4 @@
 import * as React from 'react';
-/*xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-xml:space="preserve"
- */
 
 const PlaceHolderImage = () => (
   <svg
@@ -17,6 +14,7 @@ const PlaceHolderImage = () => (
     />
     <polygon
       fill="#FFFFFF"
+      // eslint-disable-next-line max-len
       points="251.58,231.643 274.088,207.984 282.521,211.633 309.13,183.308 319.604,195.836 324.329,192.982   349.898,231.643 "
     />
     <circle fill="#FFFFFF" cx="277.582" cy="180.18" r="9.83" />

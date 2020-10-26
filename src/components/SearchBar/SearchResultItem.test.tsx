@@ -36,7 +36,7 @@ describe('SearchResultItem', () => {
         data={createResultItem()}
         visibleFields={[
           { prop: 'title' },
-          { prop: 'condition', label: 'CONDITION: ' },
+          { label: 'CONDITION: ', prop: 'condition' },
         ]}
       />
     );

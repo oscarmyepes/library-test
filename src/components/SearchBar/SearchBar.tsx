@@ -74,20 +74,25 @@ const SearchBar = ({
   const loadData = React.useCallback(
     debounce(keystrokeDelay)(async (value: string) => {
       try {
-        const query = {
-          maxcount: maxResults,
-          search: value,
-          site,
-        };
-        setLoading(true);
-        const response = await restFactory.get(
-          `${process.env.SEARCH_API_URL}/products`,
-          query
-        );
-        setError('');
-        setSuggestions(response.result);
-        setLoading(false);
-        setResultsFor(value);
+        if (value.length >= minSearchCharacters) {
+          const query = {
+            maxcount: maxResults,
+            search: value,
+            site,
+          };
+          setLoading(true);
+          const response = await restFactory.get<{ result: ResultItem[] }>(
+            `${process.env.SEARCH_API_URL}/products`,
+            query
+          );
+          setError('');
+          setSuggestions(response.result);
+          setLoading(false);
+          setResultsFor(value);
+        } else {
+          setSuggestions([]);
+          setResultsFor('');
+        }
       } catch (reqError) {
         setSuggestions([]);
         setLoading(false);
@@ -113,12 +118,7 @@ const SearchBar = ({
     const value = e.currentTarget.value;
     setSearchValue(value);
     setShowSuggestions(true);
-    if (value.length >= minSearchCharacters) {
-      await loadData(value);
-    } else {
-      setSuggestions([]);
-      setResultsFor('');
-    }
+    await loadData(value);
   };
 
   const onInputFocus = () => setShowSuggestions(true);
@@ -131,13 +131,15 @@ const SearchBar = ({
       case 38: // UP
         handleArrowKeys(keyCode);
         break;
-      case 13: // ENTER
+      case 13: {
+        // ENTER
         const selectedResult = resultItemRefs[focusedItemIndex];
         if (event.keyCode === 229 || !selectedResult) {
           break;
         }
         selectedResult.click();
         break;
+      }
     }
   };
 

@@ -1,8 +1,6 @@
-import { ReactNode } from 'react';
-
 export interface CustomSelect {
   value: string | number;
-  onChange?: (value: string| number) => void;
+  onChange?: (value: string | number) => void;
   options: Item[];
   label: Item;
 }

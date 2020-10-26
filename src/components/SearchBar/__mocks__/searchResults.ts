@@ -10,6 +10,7 @@ const DEFAULT_ITEM: ResultItem = {
   image_urls: ['https://wss.webshopmanager.com/images/F198661686.jpg'],
   inventory: 0,
   meta_description:
+    // eslint-disable-next-line max-len
     'Find D1247R Brake Pads 6S 6 Piston Replacement Pads BAER Brakes from Baer Brake Systems you need and other parts at (Sitename).',
   meta_keywords:
     'Baer Brake Systems, D1247R, Brake Pads 6S 6 Piston Replacement Pads BAER Brakes Brake Pads, (SiteURL)',

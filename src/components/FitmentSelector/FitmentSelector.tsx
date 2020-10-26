@@ -1,5 +1,6 @@
 import classnames from 'classnames';
 import * as React from 'react';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import restFactory from '../../utils/restFactory';
 import styles from './index.scss';
 import { FitmentSelectorProps, Item } from './models';
@@ -189,7 +190,6 @@ function buildDataToExport(labels, labelData, labelValues) {
 }
 
 // TODO configure fetch data using restfactory
-/* tslint:disable */
 const getLabelList = async () => await createLabels();
 
 const getLabelData = async (labelName: string): Promise<Item[]> => {
@@ -206,5 +206,3 @@ const getLabelData = async (labelName: string): Promise<Item[]> => {
       return await createEngineLabelData();
   }
 };
-
-/* tslint:enable */

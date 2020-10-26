@@ -1,7 +1,7 @@
 /*
   Rollup configuration to build the library for each component separately.
-  The files generated with this configuration bill be placed in build/{ComponentName}/
-  and allows users to import the each component this way:
+  The files generated with this configuration will be placed in build/{ComponentName}/
+  and allow users to import each component this way:
 
   import SearchBar from "sunhammer-ui/build/SearchBar";
   import FitmentSelector from "sunhammer-ui/build/FitmentSelector";
@@ -10,7 +10,7 @@
 import typescript from 'rollup-plugin-typescript2';
 import rollupCommon from './rollup.common.config';
 
-/* From input we get the component name to generate the files in the proper folder
+/* From argv's we get the component name to generate the files in the proper folder
    The comman to run this file must contain the -i flag.
    Example:
    rollup -c ./config/rollup/rollup.component.config.js -i ./src/components/MyComponent/index.tsx
@@ -32,6 +32,11 @@ export default {
       file: `build/${componentName}/index.esm.js`,
       format: 'esm',
       sourcemap: true,
+    },
+    {
+      file: `build/${componentName}/index.umd.js`,
+      format: 'umd',
+      name: 'Sunhammer',
     },
   ],
   plugins: [

@@ -5,7 +5,15 @@ import { toCurrency } from '../../utils/format';
 import styles from './searchResultItem.scss';
 import { SearchResultItemProps, VisibleFieldsSections } from './models';
 
-const Label = ({ label, value, className }) =>
+const Label = ({
+  label,
+  value,
+  className,
+}: {
+  label: string;
+  value: string;
+  className: string;
+}) =>
   value ? (
     <p className={className}>
       {label ? <span>{label}</span> : null}
@@ -16,8 +24,8 @@ const Label = ({ label, value, className }) =>
 const PROP_CLASS_NAME = 'Sui-SearchResultItem--';
 export const DEFAULT_VISIBLE_FIELDS: SearchResultItemProps['visibleFields'] = [
   { prop: 'title' },
-  { prop: 'brand_name', label: 'BRAND: ' },
-  { prop: 'dealerid', label: 'PRODUCT #: ' },
+  { label: 'BRAND: ', prop: 'brand_name' },
+  { label: 'PRODUCT #: ', prop: 'dealerid' },
   { prop: 'sale' },
   { prop: 'price' },
 ];
@@ -52,7 +60,7 @@ const SearchResultItem = ({
       }
       return { ...acc, labels: [...(acc.labels || []), item] };
     },
-    { prices: [], labels: [] }
+    { labels: [], prices: [] }
   );
 
   return (
@@ -91,7 +99,7 @@ const SearchResultItem = ({
                 `${PROP_CLASS_NAME}${label.prop}`
               )}
               label={label.label}
-              value={data[label.prop]}
+              value={data[label.prop] as string}
             />
           ))}
         </div>
