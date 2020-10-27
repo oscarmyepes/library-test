@@ -36,7 +36,7 @@ export default {
     {
       file: `build/${componentName}/index.umd.js`,
       format: 'umd',
-      name: 'Sunhammer',
+      name: componentName,
     },
   ],
   plugins: [
