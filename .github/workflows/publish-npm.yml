@@ -16,16 +16,12 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - name: Install deps
         run: yarn
-      - name: Lint
-        run: yarn lint
-      - name: Test
-        run: yarn test
       - name: Build
+        run: yarn build
         env:
           API_URL: https://ui.sunhammer.io
           LIBRARY_NAME: sunhammer-ui
           STORY_BOOK_URL: https://ui.sunhammer.io/
-        run: yarn build
       - name: Publish
         run: npm publish
         env:
