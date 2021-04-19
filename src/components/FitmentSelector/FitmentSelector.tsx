@@ -1,6 +1,5 @@
 import classnames from 'classnames';
 import * as React from 'react';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import restFactory from '../../utils/restFactory';
 import styles from './index.scss';
 import { FitmentSelectorProps, Item } from './models';
