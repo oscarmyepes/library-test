@@ -8,6 +8,9 @@ const fs = require('fs');
 const exec = promisify(childProcess.exec);
 
 async function run() {
+  console.log('ENV', process.env.API_URL);
+  console.log('ENV', process.env.LIBRARY_NAME);
+  console.log('ENV', process.env.STORY_BOOK_URL);
   try {
     const components = await getAllComponentsParentFolder();
 
