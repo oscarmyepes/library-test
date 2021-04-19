@@ -1,0 +1,55 @@
+@import '../../styles/variables';
+
+$breakpoint: 700px;
+.selectsHeight {
+  :global .Sui-FitmentSelector--select-wrapper {
+    margin-bottom: 0.25rem;
+  }
+}
+
+.hidden {
+  display: none;
+}
+.modal {
+  --sui-input-height: 2.9rem;
+  :global .Sui-FitmentSelector--select {
+    font-size: 100%;
+  }
+  @extend .selectsHeight;
+  > div:first-child {
+    max-width: 600px;
+    width: 80%;
+    overflow: hidden;
+    @media (max-width: 550px) {
+      width: 100vw;
+      height: 100vh;
+      max-width: unset;
+    }
+  }
+  .modalContent {
+    position: relative;
+    &.modalWithData {
+      min-height: auto;
+    }
+    padding-top: 0 !important;
+    :global .Sui-FitmentSelector--actions {
+      flex-direction: row-reverse;
+      justify-content: flex-start;
+      margin-top: 1rem;
+    }
+    :global .Sui-FitmentSelector--clearBtn {
+      margin-right: 1rem;
+    }
+    transition: all 0.3s ease-out;
+    height: 0;
+  }
+}
+
+.modalTitle {
+  font-weight: 700;
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin-top: 1rem;
+  border-bottom: 1px solid var(--sui-secondary-color-dark);
+  padding-bottom: 5px;
+}

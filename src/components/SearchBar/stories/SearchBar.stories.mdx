@@ -1,22 +1,56 @@
-import { Meta, Story, Canvas, ArgsTable } from '@storybook/addon-docs/blocks';
+import {
+  Meta,
+  Story,
+  Canvas,
+  ArgsTable,
+  Source,
+} from '@storybook/addon-docs/blocks';
 import SearchBar from '../SearchBar';
-import { ResultItemComp, VisisbleFieldComp } from './NestedInterfaces';
+import {
+  ResultItemComp,
+  VisibleFieldComp,
+  BasicItemComp,
+  SearchbarSectionComp,
+  RenderListDataComp,
+} from './NestedInterfaces';
 import styles from './story.scss';
+import { ImportStylesText } from '../../../stories/ImportStylesText.mdx';
+import { sections, productVisibleFields } from './data';
 
-<Meta title="Components/SearchBar/SearchBar" component={SearchBar} />
+<Meta title="Components/SearchBar" component={SearchBar} />
 
 export const Template = (args) => <SearchBar {...args} />;
 
 # SearchBar
 
-SearchBar also called WSS (Web Shop Search) uses an incremental search philosophy and starts sending search requests once the user has typed in 3 or more characters into the search bar (the number of characters can be configured).
+SearchBar also called WSS (Web Shop Search) uses an incremental search philosophy and starts sending search requests once the user has typed characters into the search bar.
 
-Features:
+The list of results in the search bar will show **Categories**, **Brands** and **Products** by default, this can be configured using the `sections` array to tell the component what sections you want to display.
 
-- Customers can configure what fields should appear in the result items list by sending a property **visibleFields** with the fields and labels to be displayed.
-  _Example:_
+#### Features:
 
-```
+- You can configure the visible **sections** using [SearchbarSection](#searchbarsection) object.
+  If you don't send **sections** array, the component will render all sections that contains data.
+
+<Source
+  language="js"
+  code={`
+const sections = [
+  { maxResults: 5, title: 'Categories', type: 'category' },
+  { maxResults: 5, title: 'Brands', type: 'brand' },
+  { maxResults: 5, title: 'Products', type: 'product' },
+]
+  `}
+/>
+
+- You can configure what fields want to see for **Products** section, sending a `visibleFields` property
+  with fields and labels to be displayed, see [this](#custom-product-fieds) example.
+
+  _Example: For products you can configure the visible fields in this way:_
+
+<Source
+  language="js"
+  code={`
 const visibleFields = [
   { prop: 'title' },
   { prop: 'brand_name', label: 'BRAND: ' },
@@ -24,26 +58,28 @@ const visibleFields = [
   { prop: 'sale' },
   { prop: 'price' },
 ]
+const sections = [
+  { maxResults: 5, title: 'Categories', type: 'category' },  
+  { maxResults: 5, title: 'Products', type: 'product', visibleFields: visibleFields },
+]
 
-```
+<SearchBar sections={sections} />
+`} />
 
-- Text in the result list can be configured as well, Header result (like SHOWING RESULTS FOR: {search}), list title (Products) can be configured.
-- Customers can navigate results using arrow keys (↑↓) and select a product by hitting the Enter key.
+- If you send the three sections (`Categories`, `Brands` and `Products`) but if the `list` property is empty
+  for any of those sections, the component will only render sections with data.
 
-## Import styles
-
-To use the basic styles provided, please import our generated css:
-
-```
-import "sunhammer-ui/build/index.css";
-```
+- **Category** and **Brands** sections does not support `visibleFields` because they just show an image and a title.
 
 ## Basic
 
 <Canvas>
   <Story
     name="Basic"
-    args={{ site: 'wss', maxResults: 8, showCloseIcon: false }}
+    args={{
+      showCloseIcon: false,
+      sections: sections,
+    }}
   >
     {(args) => <SearchBar {...args} />}
   </Story>
@@ -56,37 +92,191 @@ import "sunhammer-ui/build/index.css";
     name="Styled"
     args={{
       className: styles.Styled,
-      site: 'wss',
-      maxResults: 4,
       styled: true,
-      listTitle: 'Products',
-      resultsHeaderText: 'SHOWING REULTS FOR: ',
       showCloseIcon: true,
+      sections: sections,
     }}
   >
     {(args) => <SearchBar {...args} />}
   </Story>
 </Canvas>
 
+## Custom product fieds
+
+In this example we send the configuration for the **products** section to only show the `title` and the `brand_name`.
+
+<Canvas>
+  <Story
+    name="Custom product fieds"
+    args={{
+      className: styles.Styled,
+      styled: true,
+      showCloseIcon: true,
+      sections: sections.map((section) => {
+        if (section.type === 'product') {
+          return { ...section, visibleFields: productVisibleFields };
+        }
+        return section;
+      }),
+    }}
+  >
+    {(args) => <SearchBar {...args} />}
+  </Story>
+</Canvas>
+
+## Custom result list
+
+If you want to render a custom list of suggestions (results) you can use `renderList` property to render any html you want.
+That function will receive an object with all sections data:
+
+<Source
+  language="js"
+  code={`
+  {
+    brand: [{id: 1, name: 'name', image_url: 'http://image-url', url: 'http://url.com'}],
+    category: [{id: 1, name: 'name', image_url: 'http://image-url', url: 'http://url.com'}],
+    product: [{id: 1, title: 'Title', ...}]
+  }
+  `}
+/>
+
+In this example we are rendering the title for each section and the category/brand/product name:
+
+<Source
+  language="js"
+  code={`
+  renderList={(data) => {          
+    return (
+      <>
+        {Object.keys(data).map((sectionKey, index) => {
+          return (
+            <div key={index}>
+              <h3>{sectionKey}</h3>
+              {data[sectionKey].map((item) => (
+                <p key={item.id}>{item.name || item.title}</p>
+              ))}
+            </div>
+          );
+        })}
+      </>
+    );
+  }}  
+  `}
+/>
+
+<Canvas>
+  <Story
+    name="Custom list component"
+    args={{
+      className: styles.Styled,
+      showCloseIcon: true,
+      sections: sections,
+    }}
+  >
+    {(args) => (
+      <SearchBar
+        {...args}
+        renderList={(data) => {
+          return (
+            <>
+              {Object.keys(data).map((sectionKey, index) => {
+                return (
+                  <div className={styles.sectionContainer} key={index}>
+                    <h2 className={styles.sectionTitle}>
+                      {data[sectionKey].title}
+                    </h2>
+                    {data[sectionKey].data.list.map((item) => (
+                      <p className={styles.itemName} key={item.id}>
+                        {item.name || item.title}
+                      </p>
+                    ))}
+                  </div>
+                );
+              })}
+            </>
+          );
+        }}
+      />
+    )}
+  </Story>
+</Canvas>
+
+## With show more button
+
+<Canvas>
+  <Story
+    name="With show more button"
+    args={{
+      className: styles.Styled,
+      styled: true,
+      showCloseIcon: true,
+      sections: sections.map((section) => {
+        if (section.type === 'product') {
+          return {
+            ...section,
+            visibleFields: productVisibleFields,
+            onViewMoreClick: (data) => console.log('View more clicked', data),
+            viewMoreButtonText: 'View all Products',
+          };
+        } else if (section.type === 'category') {
+          return {
+            ...section,
+            maxResults: 10,
+            onViewMoreClick: (data) => console.log('View more clicked', data),
+            viewMoreButtonText: 'View all Categories',
+          };
+        }
+        return {
+          ...section,
+          onViewMoreClick: (data) => console.log('View more clicked', data),
+          viewMoreButtonText: 'View all',
+        };
+      }),
+    }}
+  >
+    {(args) => <SearchBar {...args} />}
+  </Story>
+</Canvas>
+
+<ImportStylesText componentName="SearchBar" />
+
 ## Props
 
 <ArgsTable of={SearchBar} />
 
-## ResultItem
+## Product
+
+This is the object shape returned by the API.
 
 <ArgsTable of={ResultItemComp} />
 
-## VisisbleField
+## SearchbarSection
 
-<ArgsTable of={VisisbleFieldComp} />
+Object to configure each section in the suggestions list.
+
+<ArgsTable of={SearchbarSectionComp} />
+
+## BasicItem
+
+Object that repesents a **Category** and **Brand** item.
+
+<ArgsTable of={BasicItemComp} />
+
+## VisibleField
+
+If you want to see specific fields in the result list for products, you can pass an array of `visibleFields` with this type:
+
+<ArgsTable of={VisibleFieldComp} />
+
+## RenderListData
+
+<ArgsTable of={RenderListDataComp} />
 
 ## ClassNames you can override
 
 You can pass a className to the root element to customize styles:
 
-```
-<SearchBar className="my-class-name" />
-```
+<Source language="js" code={`<SearchBar className="my-class-name" />`} />
 
 Also, you can override styles using specific class names:
 
@@ -95,8 +285,6 @@ Also, you can override styles using specific class names:
 
 .Sui-SearchBar--result-item {...}
 
-.Sui-SearchBar--result-header {...}
-
 .Sui-SearchBar--list-title {...}
 
 .Sui-SearchBar--search-button {...}
@@ -104,4 +292,30 @@ Also, you can override styles using specific class names:
 .Sui-SearchBar--search-input {...}
 
 .Sui-SearchBar--loading-indicator {...}
+
+.Sui-SearchBar--no-results {...}
+```
+
+**Note:** Some classes are autogenerated for sections and labels.
+
+Example:
+
+- `Sui-SearchBar--section-[type]`
+  Depending on the section type, we display a class name for each section:
+
+```
+Sui-SearchBar--section-category
+Sui-SearchBar--section-brand
+Sui-SearchBar--section-product
+```
+
+- `Sui-ProductListItem--[label-name]`
+
+Depending on what you pass in the `visibleFields` property, each result item label will be rendered with a proper class name.
+
+```
+.Sui-ProductListItem--brand_name
+
+.Sui-ProductListItem--dealerid
+...
 ```

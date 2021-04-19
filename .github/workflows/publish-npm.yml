@@ -21,8 +21,12 @@ jobs:
       - name: Test
         run: yarn test
       - name: Build
+        env:
+          API_URL: https://ui.sunhammer.io
+          LIBRARY_NAME: sunhammer-ui
+          STORY_BOOK_URL: https://ui.sunhammer.io/
         run: yarn build
       - name: Publish
         run: npm publish
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}                    

@@ -1,0 +1,107 @@
+import {
+  Meta,
+  Story,
+  Canvas,
+  ArgsTable,
+  Source,
+} from '@storybook/addon-docs/blocks';
+import dedent from 'ts-dedent';
+import Alert from '../Alert';
+
+<Meta title="Components/Alert" component={Alert} />
+
+export const Template = (args) => <Alert {...args} />;
+
+# Alert
+
+Component to show information messages when user performs any action and you need to give feedback.
+
+## Basic no styles
+
+<Canvas>
+  <Story
+    name="Basic no styles"
+    args={{
+      title: 'Title',
+      text: 'text',
+      buttonText: 'Change vehicle',
+      styled: false,
+    }}
+  >
+    {(args) => <Alert {...args} />}
+  </Story>
+</Canvas>
+
+## Success
+
+<Canvas>
+  <Story
+    name="Success"
+    args={{
+      title: 'Fits your',
+      text: '2020 Chevy Colorado',
+      type: 'success',
+      buttonText: 'Change vehicle',
+    }}
+  >
+    {(args) => <Alert {...args} />}
+  </Story>
+</Canvas>
+
+## Error
+
+<Canvas>
+  <Story
+    name="Error"
+    args={{
+      title: 'This product requires fitment',
+      type: 'error',
+      buttonText: 'Change vehicle',
+    }}
+  >
+    {(args) => <Alert {...args} />}
+  </Story>
+</Canvas>
+
+## Warning
+
+<Canvas>
+  <Story
+    name="Warning"
+    args={{
+      title: 'Not in stock',
+      type: 'warning',
+      buttonText: 'Change vehicle',
+    }}
+  >
+    {(args) => <Alert {...args} />}
+  </Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={Alert} />
+
+## ClassNames you can override
+
+You can pass a className to the root element to customize styles:
+
+<Source language="js" code={dedent`<Alert className="my-class-name" />`} />
+
+Also, you can override styles using specific class names:
+
+```
+// Class name for the root element
+.Sui-Alert--root
+// Class name for the icon on the left
+.Sui-Alert--icon
+// Class name for text container
+.Sui-Alert--info
+// Class name for the title
+.Sui-Alert--title
+// Class name for the text
+.Sui-Alert--text
+// Class name for the button container
+.Sui-Alert--action
+
+```

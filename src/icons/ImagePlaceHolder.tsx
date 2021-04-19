@@ -1,11 +1,12 @@
 import * as React from 'react';
 
-const PlaceHolderImage = () => (
+const PlaceHolderImage = ({ className = '' }) => (
   <svg
     version="1.1"
     viewBox="0 0 600 400"
     enableBackground="new 0 0 600 400"
     xmlSpace="preserve"
+    className={className}
   >
     <rect x="0" fill="#EDECEB" width="600" height="400" />
     <path

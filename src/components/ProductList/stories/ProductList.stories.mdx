@@ -1,0 +1,239 @@
+import { useState, useEffect } from 'react';
+import {
+  Meta,
+  Story,
+  Canvas,
+  ArgsTable,
+  Source,
+} from '@storybook/addon-docs/blocks';
+import dedent from 'ts-dedent';
+import ProductList from '../ProductList';
+import Pagination from '../../Pagination';
+import styles from './story.scss';
+import {
+  ResultItemComp,
+  VisibleFieldComp,
+  SearchResponseComp,
+} from '../../ProductListWrapper/stories/NestedInterfaces.tsx';
+
+<Meta title="Components/ProductList" component={ProductList} />
+
+export const Template = (args) => <ProductList {...args} />;
+
+# ProductList
+
+## Product list
+
+When you use `<ProductList />` component, you have to send all data and control all changes to show data.
+This component is useful if you don't want to use our API and you want to use you own data.
+
+<Canvas>
+  <Story
+    name="Products"
+    args={{
+      list: Array.from({ length: 3 }).map((_, index) => ({
+        availability: 'Available',
+        brand_name: `Product ${index + 1} brand`,
+        condition: 'New',
+        dealerid: `D1247R ${index + 1}`,
+        id: index + 1,
+        price: 157.49,
+        product_url: 'https://wss.webshopmanager.com/i-30519055',
+        remarks: null,
+        sale: 10.0,
+        image_url: 'https://wss.webshopmanager.com/images/T198661686.jpg',
+        title: `Product ${index + 1}`,
+        rate_count: 3,
+      })),
+      totalPages: 10,
+      currentPage: 1,
+    }}
+  >
+    {(args) => {
+      const [page, setPage] = useState(args.currentPage);
+      useEffect(() => {
+        setPage(args.currentPage);
+      }, [args.currentPage]);
+      return (
+        <ProductList
+          {...args}
+          currentPage={page}
+          onPageChanged={(page) => setPage(page)}
+        />
+      );
+    }}
+  </Story>
+</Canvas>
+
+## With custom labels
+
+You can pass a list of labels to show in each result item, please have a look at [ProductListItem custom labels](/?path=/docs/components-common-searchresultitem--basic#custom-labels).
+
+<Canvas>
+  <Story
+    name="With custom labels"
+    args={{
+      styled: true,
+      list: [
+        {
+          availability: 'Available',
+          brand_name: 'Baer Brake Systems',
+          condition: 'New',
+          dealerid: 'D1247R',
+          id: '30519055',
+          price: 157.49,
+          product_url: 'https://wss.webshopmanager.com/i-30519055',
+          remarks: null,
+          sale: 10.0,
+          image_url: 'https://wss.webshopmanager.com/images/T198661686.jpg',
+          title:
+            'Baer Brake Systems Brake Pads 6S 6 Piston Replacement Pads BAER Brakes D1247R',
+          rating_count: 3,
+          url: '/?path=/story/components-list--with-custom-labels',
+        },
+      ],
+      totalPages: 10,
+      currentPage: 1,
+      visibleFields: [
+        { prop: 'title' },
+        { prop: 'condition', label: 'CONDITION: ' },
+        { prop: 'remarks', label: 'REMARKS: ' },
+        { prop: 'brand_name', label: 'BRAND: ' },
+        { prop: 'dealerid', label: 'PRODUCT #: ' },
+        { prop: 'sale' },
+        { prop: 'price' },
+        { prop: 'rating_count' },
+      ],
+    }}
+  >
+    {(args) => {
+      return <ProductList {...args} />;
+    }}
+  </Story>
+</Canvas>
+
+## Using render props to render result list with a custom component
+
+If you want to render a custom result list item, you can use **renderList** function to control how the list should look.
+In this example we are rendering the product `title` and `condition`:
+
+<Source
+  language="js"
+  code={dedent`  
+<ProductList
+  {...args}
+  renderList={(data) =>
+    data.list.map((item) => (
+      <div className={styles.customListItem} key={item.id}>
+        <p>{item.title}</p>
+        <p>{item.condition}</p>
+      </div>
+    ))
+  }
+/>
+  `}
+/>
+
+<Canvas>
+  <Story
+    name="Custom list"
+    args={{
+      styled: true,
+      list: [
+        {
+          availability: 'Available',
+          brand_name: 'Baer Brake Systems',
+          condition: 'New',
+          dealerid: 'D1247R',
+          id: '30519055',
+          price: 157.49,
+          product_url: 'https://wss.webshopmanager.com/i-30519055',
+          remarks: null,
+          sale: 10.0,
+          image_url: 'https://wss.webshopmanager.com/images/T198661686.jpg',
+          title:
+            'Baer Brake Systems Brake Pads 6S 6 Piston Replacement Pads BAER Brakes D1247R',
+        },
+      ],
+      totalPages: 10,
+      currentPage: 1,
+    }}
+  >
+    {(args) => {
+      return (
+        <ProductList
+          {...args}
+          renderList={(data) =>
+            data.map((item) => (
+              <div className={styles.customListItem} key={item.id}>
+                <p>{item.title}</p>
+                <p>{item.condition}</p>
+              </div>
+            ))
+          }
+        />
+      );
+    }}
+  </Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={ProductList} />
+
+## Product
+
+<ArgsTable of={ResultItemComp} />
+
+## VisibleField
+
+<ArgsTable of={VisibleFieldComp} />
+
+## ProductSearchResponse
+
+<ArgsTable of={SearchResponseComp} />
+
+## ClassNames you can override
+
+You can pass a className to the root element to customize styles:
+
+<Source
+  language="js"
+  code={dedent`<ProductList className="my-class-name" />`}
+/>
+
+Also, you can override styles using specific class names:
+
+```
+.Sui-List--container
+
+.Sui-List--horizontal
+
+// When the product has a link, the result item will wrapped with an anchor tag
+.Sui-List--product-link
+
+.Sui-ProductListItem--root
+
+.Sui-ProductListItem--image
+
+.Sui-ProductListItem--title
+
+.Sui-Rating--filled
+
+.Sui-Rating--empty
+
+```
+
+**Note:** Some classes are autogenerated for labels.
+
+Example:
+`Sui-ProductListItem--[label-name]`
+
+Depending on what you pass in the `visibleFields` property, each result item label will be rendered with a proper class name.
+
+```
+.Sui-ProductListItem--brand_name
+
+.Sui-ProductListItem--dealerid
+...
+```

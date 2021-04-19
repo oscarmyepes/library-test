@@ -1,0 +1,67 @@
+@import '../../../styles/icons';
+.priceInputs {
+  display: flex;
+  flex-wrap: wrap;
+  grid-gap: 5px;
+  padding: 0.5rem 0.5rem 0.5rem 4px;
+}
+
+.priceRangeItem {
+  display: block;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  margin-top: 0.3rem;
+  position: relative;
+
+  :global(.Sui-arrow) {
+    padding-left: 12px;
+    display: flex;
+    align-items: center;
+    &:before {
+      padding: 3px;
+      left: 8px;
+      border-width: 0 2px 2px 0;
+    }
+  }
+}
+
+.priceInput {
+  max-width: 60px;
+}
+
+.priceInputs {
+  /* Chrome, Safari, Edge, Opera */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  /* Firefox */
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
+}
+
+// Styled classes
+.priceSectionContainerStyled {
+  :global(.SuiButton.primary),
+  :global(.SuiInput) {
+    height: 25px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .priceSubmitBtn {
+    background-color: transparent;
+    border: none;
+  }
+  button:first-child {
+    padding-top: 0.5rem;
+  }
+  form {
+    padding-left: 0.8rem;
+  }
+  .priceRangeItem {
+    padding-left: 0.8rem;
+  }
+}

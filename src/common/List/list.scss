@@ -1,0 +1,33 @@
+.root {
+  display: grid;
+  position: relative;
+}
+
+.loadingIndicator {
+  top: 0px;
+}
+
+.listContainer {
+  display: grid;
+  grid-gap: 0.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+.isBusy {
+  opacity: 0.5;
+}
+
+.listHorizontal {
+  grid-template-columns: 1fr;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+}
+
+// Styled
+
+.listContainerStyled {
+  padding-top: 0.5rem;
+}

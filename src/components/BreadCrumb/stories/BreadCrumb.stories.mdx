@@ -1,0 +1,111 @@
+import {
+  Meta,
+  Story,
+  Canvas,
+  ArgsTable,
+  Source,
+} from '@storybook/addon-docs/blocks';
+import BreadCrumb from '../BreadCrumb';
+import { data } from './data';
+import Angle from '../../../icons/Angle';
+import styles from './story.scss';
+import {
+  BreacrumbFilterComp,
+  BreadcrumbItemComp,
+  BreadcrumbPathsComp,
+} from './NestedInterfaces';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+
+<Meta title="Components/BreadCrumb" component={BreadCrumb} />
+
+export const Template = (args) => <BreadCrumb {...args} />;
+
+# BreadCrumb
+
+`BreadCrumb` component allow users to make selections from a range of values.
+
+The component renders the path of the current page and a list of selected filters.
+
+Calculates automatillcay when to collapse the breadcrumb, you can take control of that passing a `maxItems` value in the `paths` object.
+
+**Caveat:** If you change the style of the eliipsis element (`#sui-breadCrumb--ellipsis`), the math to automatically collapse the breadcrumb won't work as expected because the width of the container will change.
+If you want to set a different style to the ellipsis, please make sure the HTML element for the ellipsis (`#sui-breadCrumb--ellipsis`) width is `41px`.
+
+## Basic
+
+<Canvas>
+  <Story
+    name="Basic"
+    args={{
+      ...data,
+      filters: data.filters.map((item) => ({ ...item, color: undefined })),
+    }}
+  >
+    {(args) => {
+      return <BreadCrumb {...args} />;
+    }}
+  </Story>
+</Canvas>
+
+## Styled
+
+In this example we are sending a React element as path separator and a custom element for Link paths.
+
+<Source
+  language="js"
+  code={`
+{
+  separator: <Angle className={styles.angleIcon} size={20} />
+}
+`}
+/>
+
+<Canvas>
+  <Story
+    name="Styled"
+    args={{
+      ...data,
+      paths: {
+        ...data.paths,
+        maxItems: 3,
+        separator: () => <Angle className={styles.angleIcon} size={20} />,
+      },
+      styled: true,
+    }}
+  >
+    {(args) => (
+      <Router>
+        <BreadCrumb {...args} />
+      </Router>
+    )}
+  </Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={BreadCrumb} />
+
+## BreadcrumbPaths
+
+<ArgsTable of={BreadcrumbPathsComp} />
+
+## BreadcrumbItem
+
+<ArgsTable of={BreadcrumbItemComp} />
+
+## BreacrumbFilter
+
+<ArgsTable of={BreacrumbFilterComp} />
+
+## ClassNames you can override
+
+<Source language="js" code={`<BreadCrumb className="my-class-name" />`} />
+
+Also, you can override styles using specific class names:
+
+```
+.Sui-BreadCrumb--filter
+.Sui-BreadCrumb--remove-filter-btn
+.Sui-BreadCrumb--path
+.Sui-BreadCrumb--separator
+```

@@ -1,0 +1,137 @@
+import Select from 'react-select';
+import {
+  Meta,
+  Story,
+  Canvas,
+  ArgsTable,
+  Source,
+} from '@storybook/addon-docs/blocks';
+import dedent from 'ts-dedent';
+
+export const Summary = () => (
+  <p>
+    FitmentSelector component is to allow customers to select fitment of their
+    vehicle. It consists of letting a customer select a Year, Make, Model, etc,
+    to start filtering out search results.
+  </p>
+);
+
+export const WithCustomSelect = ({ props }) => {
+  const options = props.options?.map((item) => ({
+    label: item.name,
+    value: item.id,
+  }));
+  return (
+    <Select
+      styles={{
+        container: (base) => ({
+          ...base,
+          marginRight: '5px',
+          minWidth: '120px',
+          marginBottom: '10px',
+        }),
+      }}
+      options={options}
+      onChange={(data) => props.onChange(data?.value)}
+      value={
+        props.value ? options.find((item) => item.value === props.value) : null
+      }
+      placeholder={props.label.name}
+      isDisabled={!props.options?.length}
+      menuPortalTarget={document.querySelector('body')}
+    ></Select>
+  );
+};
+
+export function CodeExample() {
+  return (
+    <>
+      <i>Example using 'react-select'</i>
+      <Source
+        language="js"
+        code={dedent`
+  import Select from 'react-select';
+  ...
+<FitmentSelector
+  ...
+  components={{
+    select: (props) => {
+      const options = props.options?.map((item) => ({
+        value: item.id,
+        label: item.name,
+      }));
+      return (
+        <Select          
+          styles={{
+            container: (base) => ({
+              ...base,
+              minWidth: '120px',
+              marginRight: '5px',
+            }),
+          }}
+          options={options}
+          onChange={(data) => props.onChange(data?.value)}
+          value={
+            props.value
+              ? options.find((item) => item.value === props.value)
+              : null
+          }
+          isDisabled={!props.options?.length}
+          menuPortalTarget={document.querySelector('body')}
+        ></Select>
+      );
+    },
+  }}
+/>
+  `}
+      />
+    </>
+  );
+}
+
+export const data = {
+  labels: [
+    { id: 1, name: 'Year' },
+    { id: 2, name: 'Make' },
+    { id: 3, name: 'Model' },
+  ],
+  labelsData: {
+    Year: [
+      { id: 1, name: 2020 },
+      { id: 2, name: 2019 },
+      { id: 3, name: 2018 },
+    ],
+    Make: [
+      { id: 1, name: 'Make 1' },
+      { id: 2, name: 'Make 2' },
+      { id: 3, name: 'Make 3' },
+    ],
+    Model: [
+      { id: 1, name: 'Model 1' },
+      { id: 2, name: 'Model 2' },
+      { id: 3, name: 'Model 3' },
+    ],
+  },
+  selectedValues: {
+    Year: '1',
+  },
+};
+
+export const optionalData = {
+  labels: [
+    { id: 1, name: 'Engine' },
+    { id: 2, name: 'Body' },
+  ],
+  labelsData: {
+    Engine: [
+      { id: 1, name: 'Engine 1' },
+      { id: 2, name: 'Engine 2' },
+      { id: 3, name: 'Engine 3' },
+    ],
+    Body: [
+      { id: 1, name: 'Body 1' },
+      { id: 2, name: 'Body 2' },
+      { id: 3, name: 'Body 3' },
+    ],
+  },
+};

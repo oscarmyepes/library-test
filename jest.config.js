@@ -17,10 +17,11 @@ module.exports = {
     '!**/*.stories.{ts,tsx}',
     '!**/stories/**/*.{ts,tsx}',
     '!**/index.{ts,tsx}',
+    '!**/*.d.ts',
   ],
   globals: {
     'ts-jest': {
-      tsConfig: 'tsconfig.json',
+      tsconfig: 'tsconfig.json',
       diagnostics: {
         ignoreCodes: [151001],
       },

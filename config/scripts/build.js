@@ -7,6 +7,28 @@ const fs = require('fs');
 
 const exec = promisify(childProcess.exec);
 
+async function run() {
+  try {
+    const components = await getAllComponentsParentFolder();
+
+    log('info', 'Creating main index file');
+    createMainIndexFile(components);
+    log('info', 'Main index file created');
+
+    log('info', `Packaging library`);
+    await exec('yarn rollup -c ./config/rollup/rollup.config.js');
+    removeNotNeededCssFiles('build');
+    log('info', `Packaging library finished`);
+    components.forEach(async (folder) => {
+      await executeRollUpScript(folder);
+      await writePackageJsonFile(folder);
+      removeNotNeededCssFiles(`build/${folder}`);
+    });
+  } catch (error) {
+    log('error', error);
+  }
+}
+
 function log(type, message) {
   // eslint-disable-next-line no-console
   console[type](message);
@@ -46,19 +68,34 @@ async function executeRollUpScript(component) {
   log('info', `${component} built`);
 }
 
-async function run() {
-  try {
-    log('info', `Packaging library`);
-    await exec('yarn rollup -c ./config/rollup/rollup.config.js');
-    log('info', `Packaging library finished`);
-    const components = await getAllComponentsParentFolder();
-    components.forEach(async (folder) => {
-      await executeRollUpScript(folder);
-      await writePackageJsonFile(folder);
-    });
-  } catch (error) {
-    log('error', error);
-  }
+/*
+  TODO Find a way to prevent the gneration of index.esm.css and index.umd.css files with rollup.
+  I couldn't find a way to don't generate those files with rollup.
+  So this function removes those files because they have the same content as index.css file.
+*/
+function removeNotNeededCssFiles(path) {
+  ['esm', 'umd'].forEach((ext) =>
+    fs.promises.unlink(`${path}/index.${ext}.css`)
+  );
 }
 
+function createMainIndexFile(components) {
+  const template = `
+export { default as {{COMP_NAME}} } from './components/{{COMP_NAME}}';
+export * from './components/{{COMP_NAME}}';`;
+
+  const fileContent = components.map((compName) =>
+    template.replace(/{{COMP_NAME}}/g, compName)
+  );
+  fs.writeFileSync(
+    path.join(__dirname, '../../src/index.ts'),
+    `/* eslint-disable import/export */
+${fileContent.join('\n')}
+
+export { config } from './config';
+`
+  );
+}
+
+// Exec script
 run();

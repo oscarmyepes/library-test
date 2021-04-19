@@ -1,0 +1,9 @@
+.story {
+  :global(.Sui-FitmentStore--popover-container) {
+    position: relative;
+  }
+}
+
+:global(.Sui-Modal--root) {
+  z-index: 1;
+}

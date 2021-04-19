@@ -1,0 +1,12 @@
+:global .Sui-SearchBar--suggestions-container {
+  // We need to uset the position absolute for story book to show the search result inside the canvas
+  position: unset;
+  max-height: calc(100vh - 120px);
+  overflow: auto;
+}
+
+.Styled {
+  :global .Sui-SearchBar--suggestions-container {
+    max-height: calc(100vh - 64px);
+  }
+}

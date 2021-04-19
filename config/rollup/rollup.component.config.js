@@ -24,6 +24,7 @@ export default {
   ...rollupCommon,
   output: [
     {
+      exports: 'auto',
       file: `build/${componentName}/index.js`,
       format: 'cjs',
       sourcemap: true,
@@ -36,7 +37,11 @@ export default {
     {
       file: `build/${componentName}/index.umd.js`,
       format: 'umd',
+      globals: {
+        react: 'React',
+      },
       name: componentName,
+      sourcemap: true,
     },
   ],
   plugins: [

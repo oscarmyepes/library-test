@@ -5,8 +5,15 @@
    To show properties for ResultItem interface
 */
 
-import { ResultItem, VisisbleField } from '../models';
+import { BasicItem, Product, VisibleField } from '../../../models/search';
+import { RenderListData, SearchbarSection } from '../models';
 
-export const ResultItemComp = (_: ResultItem) => null;
+export const ResultItemComp = (_: Product) => null;
 
-export const VisisbleFieldComp = (_: VisisbleField<ResultItem>) => null;
+export const BasicItemComp = (_: BasicItem) => null;
+
+export const VisibleFieldComp = (_: VisibleField<Product | BasicItem>) => null;
+
+export const SearchbarSectionComp = (_: SearchbarSection) => null;
+
+export const RenderListDataComp = (_: RenderListData) => null;

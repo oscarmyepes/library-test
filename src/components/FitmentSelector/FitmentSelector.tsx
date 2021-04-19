@@ -1,99 +1,169 @@
 import classnames from 'classnames';
+import debounce from 'lodash/debounce';
 import * as React from 'react';
-import restFactory from '../../utils/restFactory';
-import styles from './index.scss';
-import { FitmentSelectorProps, Item } from './models';
-import NativeSelect from './NativeSelect';
 import {
-  createEngineLabelData,
-  createLabels,
-  createMakeLabelData,
-  createModelLabelData,
-  createSubModelLabelData,
-  createYearLabelData,
-} from './__mocks__/labels';
+  FITMENT_SELECTOR_STORAGE_KEY,
+  LIMIT_FITMENTS_LOCAL_STORAGE,
+} from '../../utils/constants';
+import { validateSelectedValues } from '../../utils/fitmentValidator';
+import {
+  FitmentSelectorStore,
+  FitmentSelectorProps,
+  Item,
+  SelectedValues,
+} from './models';
+import NativeSelect from './NativeSelect';
+import styles from './styles/fitmentSelector.scss';
+
+const Labels = ({
+  labels,
+  CustomSelect,
+  currentSelectedValues,
+  onLabelChange,
+  labelsData,
+  styled,
+  isVertical,
+}) =>
+  labels.map((label, index) =>
+    CustomSelect ? (
+      <CustomSelect
+        key={label.id}
+        value={currentSelectedValues[label.name] || ''}
+        onChange={(e) => onLabelChange(label.name, e)}
+        options={labelsData[label.name]}
+        label={label}
+      />
+    ) : (
+      <NativeSelect
+        key={label.id}
+        onChange={(e) => onLabelChange(label.name, e.currentTarget.value)}
+        value={currentSelectedValues[label.name] || ''}
+        className="Sui-FitmentSelector--select"
+        disabled={
+          (index > 0 && !currentSelectedValues[labels[index - 1].name]) ||
+          !labelsData[label.name]?.length
+        }
+        name={label.name}
+        options={
+          labelsData[label.name]?.map((item) => ({
+            id: item.id,
+            name: item.name,
+          })) || []
+        }
+        styled={styled}
+        isVertical={isVertical}
+      />
+    )
+  );
 
 const FitmentSelector = ({
+  autocommit,
+  autocommitDelay = 2000,
   className = '',
   clearButtonText = 'Clear',
+  components,
   id,
+  labels,
+  labelsData,
   orientation = 'horizontal',
   onChange,
   onSubmit,
+  optionalLabels = [],
+  optionalLabelsTitle = 'Optional Fields',
   searchButtonText = 'Search',
+  selectedValues,
   styled = false,
-  components,
 }: FitmentSelectorProps) => {
-  const [labels, setLabels] = React.useState<Item[]>([]);
-  const [labelValues, setLabelValue] = React.useState<number[]>([]);
-  const [labelData, setLabelData] = React.useState<Item[][]>([]);
+  const [internalSelectedValues, setInternalSelectedValues] = React.useState(
+    selectedValues
+  );
 
   React.useEffect(() => {
-    async function doCall() {
-      // const labelsResponse = (await restFactory.get('/labels')) as Label[];
-      const labelsResponse = await getLabelList();
-      setLabels(labelsResponse);
-      // const yearLabelData = (await restFactory.get(
-      //   `/${labelsResponse[0].name}`
-      // )) as LabelData[];
-      const yearLabelData = await getLabelData(labelsResponse[0].name);
-      setLabelData([yearLabelData]);
-    }
-    doCall();
-  }, []);
-
-  /**
-   * On every select change event we call the onChange function passed by user,
-   * so user can track what labels have selected values and what the values are
-   */
-  React.useEffect(() => {
-    if (onChange && labelValues.length) {
-      const dataToExport = buildDataToExport(labels, labelData, labelValues);
-      onChange(dataToExport);
-    }
-  }, [labelValues]);
+    const validSelectedValues = validateSelectedValues(
+      selectedValues,
+      labelsData,
+      [...labels, ...optionalLabels]
+    );
+    setInternalSelectedValues(validSelectedValues);
+  }, [selectedValues, labelsData]);
 
   /**
    * Function to set the value for each label when user changes its value.
    * This function also clears the state of selected labels when a parent label changes
    * Example:
    * Year > Make > Model
-   * If all selects have values and user selects a different Year, Make and Model selects must be reseted
-   * @param labelIndex the index of the label that was cahnged
-   * @param e html event
+   * If all selects have values and user selects a different Year; Make and Model selects must be reseted
    */
-  const onLabelChange = async (labelIndex: number, value: string | number) => {
-    setLabelValue((state) => {
-      // Copy orignal state to prevent mutations and clear labels that are on the right side
-      const valuesCopy = [...state].slice(0, labelIndex);
-      if (Number(value)) {
-        valuesCopy[labelIndex] = Number(value);
-      }
-      return valuesCopy;
-    });
-    if (labelIndex < labels.length - 1) {
-      // const nextLabelData = (await restFactory.get(
-      //   `/${labels[labelIndex + 1].name}`
-      // )) as LabelData[];
-      const nextLabelData = await getLabelData(labels[labelIndex + 1].name);
-      setLabelData((state) => {
-        const labelDataCopy = [...state];
-        labelDataCopy[labelIndex + 1] = nextLabelData;
-        return labelDataCopy;
-      });
+  const onLabelChange = async (
+    labelId: number | string,
+    value: string | number
+  ) => {
+    const allLabels = [...labels, ...optionalLabels];
+    const nextLabelIndex =
+      allLabels.findIndex((item) => item.name === labelId) + 1;
+    const labelToClearData = allLabels.slice(nextLabelIndex);
+    const newSelectedValues = { ...internalSelectedValues, [labelId]: value };
+
+    for (const key of labelToClearData) {
+      delete newSelectedValues[key.name];
+    }
+    // If there is change we cancel the previous debounced function execution to prevent autocommit
+    debouncedOnChange.cancel();
+    setInternalSelectedValues(newSelectedValues);
+    onChange?.(labelId, newSelectedValues);
+    if (
+      autocommit &&
+      Object.keys(newSelectedValues).length ===
+        labels.length + optionalLabels.length
+    ) {
+      debouncedOnChange(newSelectedValues);
     }
   };
 
-  const onClear = () => setLabelValue([]);
+  const debouncedOnChange = React.useCallback(
+    debounce(async (values) => {
+      submit(values);
+    }, autocommitDelay),
+    [autocommitDelay]
+  );
 
   const onSearch = () => {
-    if (onSubmit) {
-      onSubmit(buildDataToExport(labels, labelData, labelValues));
+    submit(internalSelectedValues);
+  };
+
+  const submit = (values: SelectedValues) => {
+    const storedFitments: FitmentSelectorStore[] = JSON.parse(
+      localStorage.getItem(FITMENT_SELECTOR_STORAGE_KEY) || '[]'
+    );
+    const newFitmentToStore = getDataToStore(
+      internalSelectedValues,
+      labels,
+      labelsData
+    );
+    if (!fitmentExistsInLocalStorage(newFitmentToStore, storedFitments)) {
+      localStorage.setItem(
+        FITMENT_SELECTOR_STORAGE_KEY,
+        JSON.stringify([
+          newFitmentToStore,
+          ...storedFitments.slice(0, LIMIT_FITMENTS_LOCAL_STORAGE),
+        ])
+      );
     }
+    onSubmit?.(values);
+  };
+
+  const onClear = () => {
+    onChange?.(null, null);
+    setInternalSelectedValues(null);
   };
 
   const isVertical = orientation === 'vertical';
   const CustomSelect = components?.select;
+  const currentSelectedValues = internalSelectedValues || {};
+
+  if (!labels.length) {
+    return null;
+  }
 
   return (
     <div
@@ -106,102 +176,113 @@ const FitmentSelector = ({
         className
       )}
     >
-      {labels.map((label, index) =>
-        CustomSelect ? (
-          <CustomSelect
-            key={label.id}
-            value={labelValues[index] || ''}
-            onChange={(e) => onLabelChange(index, e)}
-            options={index > labelValues.length ? null : labelData[index]}
-            label={label}
-          />
-        ) : (
-          <NativeSelect
-            key={label.id}
-            onChange={(e) => onLabelChange(index, e.currentTarget.value)}
-            value={labelValues[index] || ''}
-            className="Sui-FitmentSelector--select"
-            disabled={index > labelValues.length}
-            name={label.name}
-            options={
-              labelData.length > index
-                ? labelData[index].map((item) => ({
-                    id: item.id,
-                    name: item.name,
-                  }))
-                : []
-            }
+      <Labels
+        labels={labels}
+        CustomSelect={CustomSelect}
+        currentSelectedValues={currentSelectedValues}
+        onLabelChange={onLabelChange}
+        labelsData={labelsData}
+        styled={styled}
+        isVertical={isVertical}
+      />
+      {Object.keys(internalSelectedValues || {}).length >= labels.length &&
+      optionalLabels.length ? (
+        <>
+          <p className="Sui-FitmentSelector--optional-fields-label">
+            {optionalLabelsTitle}
+          </p>
+          <Labels
+            labels={optionalLabels}
+            CustomSelect={CustomSelect}
+            currentSelectedValues={currentSelectedValues}
+            onLabelChange={onLabelChange}
+            labelsData={labelsData}
             styled={styled}
             isVertical={isVertical}
           />
-        )
-      )}
-      <div
-        className={classnames(
-          styles.actions,
-          {
-            [styles.actionsVertical]: styled && isVertical,
-          },
-          'Sui-FitmentSelector--actions'
-        )}
-      >
-        <button
-          type="button"
+        </>
+      ) : null}
+      {!autocommit ? (
+        <div
           className={classnames(
+            styles.actions,
             {
-              [`SuiButton primary ${styles.StyledSearchBtn}`]: styled,
-              [styles.StyledSearchBtnVertical]: styled && isVertical,
+              [styles.actionsVertical]: styled && isVertical,
             },
-            'Sui-FitmentSelector--searchBtn'
+            'Sui-FitmentSelector--actions'
           )}
-          disabled={labelValues.length === 0}
-          onClick={onSearch}
         >
-          {searchButtonText}
-        </button>
-        <button
-          type="button"
-          className={classnames(
-            {
-              [`SuiButton secondary ${styles.StyledClearBtn}`]: styled,
-            },
-            'Sui-FitmentSelector--clearBtn'
-          )}
-          onClick={onClear}
-        >
-          {clearButtonText}
-        </button>
-      </div>
+          <button
+            type="button"
+            className={classnames(
+              {
+                [`SuiButton primary ${styles.styledSearchBtn}`]: styled,
+                [styles.styledSearchBtnVertical]: styled && isVertical,
+              },
+              'Sui-FitmentSelector--searchBtn'
+            )}
+            disabled={Object.keys(currentSelectedValues).length < labels.length}
+            onClick={onSearch}
+          >
+            {searchButtonText}
+          </button>
+          <button
+            type="button"
+            className={classnames(
+              {
+                [`SuiButton secondary ${styles.styledClearBtn}`]: styled,
+              },
+              'Sui-FitmentSelector--clearBtn'
+            )}
+            onClick={onClear}
+          >
+            {clearButtonText}
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 };
 
 export default FitmentSelector;
 
-function buildDataToExport(labels, labelData, labelValues) {
-  return labels.map((label, index) => ({
-    ...label,
-    value:
-      labelData.length > index
-        ? labelData[index][labelValues[index] - 1] || null
-        : null,
-  }));
+/**
+ * Function to get data to store in LocalStorage.
+ * This data will be used in FitmentStore component
+ * @returns
+ * [
+ *  { "label": labelItemData, "value": labelSelectedValue },
+ * ]
+ */
+function getDataToStore(
+  selectedValues: SelectedValues,
+  labels: Item[],
+  labelsData: { [key: string]: Item[] }
+) {
+  return labels.reduce((acc, label) => {
+    if (selectedValues[label.name]) {
+      return [
+        ...acc,
+        {
+          label: label,
+          value: labelsData[label.name].find(
+            (labelData) =>
+              String(labelData.id) === String(selectedValues[label.name])
+          ),
+        },
+      ];
+    }
+    return acc;
+  }, []);
 }
 
-// TODO configure fetch data using restfactory
-const getLabelList = async () => await createLabels();
+function fitmentExistsInLocalStorage(newFitmentToStore, storedFitments) {
+  const fitToStoreIds = getFitmentValuesIds(newFitmentToStore);
+  return !!storedFitments.find(
+    (storedFitment) => fitToStoreIds === getFitmentValuesIds(storedFitment)
+  );
+}
 
-const getLabelData = async (labelName: string): Promise<Item[]> => {
-  switch (labelName) {
-    case 'Year':
-      return await createYearLabelData();
-    case 'Make':
-      return await createMakeLabelData();
-    case 'Model':
-      return await createModelLabelData();
-    case 'Submodel':
-      return await createSubModelLabelData();
-    case 'Engine':
-      return await createEngineLabelData();
-  }
-};
+function getFitmentValuesIds(fitmentStore) {
+  return fitmentStore.reduce((acc, item) => `${acc}-${item.value.id}`, '');
+}

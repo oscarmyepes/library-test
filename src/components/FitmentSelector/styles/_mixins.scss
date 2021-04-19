@@ -1,0 +1,9 @@
+@import './variables';
+
+@mixin styled-button {
+  min-width: $inputs-width;
+}
+@mixin styled-responsive {
+  margin-right: 0;
+  margin-bottom: 0.5rem;
+}

@@ -1,0 +1,14 @@
+@import './variables';
+@import './mixins';
+
+.styledSelect {
+  margin-right: 0.5rem;
+  min-width: $inputs-width + 1.5rem;
+  @media (max-width: $breakpoint) {
+    @include styled-responsive;
+  }
+}
+.styledSelectVertical {
+  @include styled-responsive;
+  width: 100%;
+}

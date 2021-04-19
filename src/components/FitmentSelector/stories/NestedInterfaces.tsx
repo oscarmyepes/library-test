@@ -9,4 +9,4 @@ import { CustomSelect, Item, SelectedValues } from '../models';
 
 export const CustomSelectComp = (_: CustomSelect) => null;
 export const SelectedValuesComp = (_: SelectedValues) => null;
-export const LabelComp = (_: Item) => null;
+export const ItemComp = (_: Item) => null;

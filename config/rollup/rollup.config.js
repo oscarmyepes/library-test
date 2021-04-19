@@ -26,7 +26,11 @@ export default {
     {
       file: packageJson.unpkg,
       format: 'umd',
+      globals: {
+        react: 'React',
+      },
       name: 'Sunhammer',
+      sourcemap: true,
     },
   ],
   plugins: [

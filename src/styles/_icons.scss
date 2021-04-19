@@ -1,0 +1,18 @@
+:global(.Sui-arrow) {
+  &:before {
+    content: ' ';
+    position: absolute;
+    border: solid black;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 5px;
+  }
+  &:global(.next):before {
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+  }
+  &:global(.prev):before {
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(135deg);
+  }
+}

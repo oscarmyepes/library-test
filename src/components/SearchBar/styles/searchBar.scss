@@ -1,0 +1,47 @@
+@import '../../../styles/variables';
+@import '../../../styles/inputs';
+@import '../../../styles/buttons';
+
+// Basic styles
+.searchBarRoot {
+  outline: none;
+}
+.searchBarContainer {
+  position: relative;
+}
+
+.searchBarInputContainer {
+  display: flex;
+}
+
+.inputContainer {
+  display: flex;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input {
+  width: 100%;
+  box-sizing: border-box;
+  padding-right: 30px;
+}
+
+.clearIcon {
+  position: absolute;
+  right: 0px;
+  background-color: transparent;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+// Styled classes
+
+.styledButton {
+  width: 25%;
+}

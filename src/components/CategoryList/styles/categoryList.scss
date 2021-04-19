@@ -1,0 +1,105 @@
+@import '../../../styles/variables';
+
+.listContainer {
+  :global(.Sui-List--container) {
+    grid-template-columns: 1fr;
+    &:not(:global(.Sui-List--horizontal)) {
+      grid-gap: 3rem 0.5rem;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+  }
+}
+
+.categoryLink {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: inherit;
+  text-decoration: inherit;
+  justify-content: space-between;
+  &.horizontal {
+    height: 100px;
+    flex-direction: row;
+    justify-content: flex-start;
+    &.withArrow {
+      &:after {
+        content: ' ';
+        position: absolute;
+        right: 20px;
+        border: solid black;
+        border-width: 0 3px 3px 0;
+        display: inline-block;
+        padding: 3px;
+        transform: rotate(-45deg);
+        -webkit-transform: rotate(-45deg);
+      }
+    }
+
+    @media (max-width: 500px) {
+      height: 55px;
+    }
+  }
+
+  :global .Sui-CategoryList--image {
+    max-width: 100%;
+  }
+
+  :global .Sui-CategoryList--title {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 1.5rem;
+  }
+  :global .Sui-CategoryList--image-container {
+    width: 175px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-height: 100%;
+    overflow: hidden;
+  }
+}
+
+.horizontal {
+  :global .Sui-CategoryList--image-container {
+    justify-content: end;
+    @media (max-width: 500px) {
+      width: 110px;
+    }
+    @media (max-width: 330px) {
+      width: 60px;
+    }
+  }
+  :global .Sui-CategoryList--title {
+    margin-left: 1.5rem;
+    padding-right: 13px;
+    word-break: break-word;
+    text-align: left;
+    @media (max-width: 330px) {
+      font-size: 1rem;
+    }
+  }
+  :global .Sui-CategoryList--image {
+    max-height: 100px;
+    @media (max-width: 330px) {
+      width: 60px;
+    }
+  }
+}
+
+:global .Sui-List--container {
+  margin-bottom: 2rem;
+}
+
+.cursorPointer {
+  cursor: pointer;
+}
+
+// Styled class
+.categoryLinkStyled {
+  &.horizontal {
+    border: 1px solid var(--sui-secondary-color-dark);
+    padding: 0.5rem;
+    border-radius: 3px;
+  }
+}

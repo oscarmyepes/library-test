@@ -7,10 +7,20 @@
 2. Create a `.env` and `.env.test` file in the root directory
 
 ```
+// .env
 API_URL=http://api-url.com
+LIBRARY_NAME=sunhammer-ui
+STORY_BOOK_URL=https://develop.dq31wl4uj8x39.amplifyapp.com/
+API_KEY=any-key-you-want
 ```
 
-Confirm with a fellow developer what variables should be set in this file.
+```
+// .env.test
+API_URL=http://test/api
+API_KEY=any-key-you-want
+```
+
+Confirm with a fellow developer what variable values should be set in those files.
 
 3. To Install dependencies run:
 
@@ -160,30 +170,43 @@ docker-compose run sunhammer yarn add new-depedency
 
 ## Build and publish
 
-You can generate the distribution files running:
+We have a github actiion to publish the library to NPM, we have to follow these steps:
 
-```
-yarn build
-```
+1. Bump `pacakage.json` version with a proper version
+2. Push your changes into develop branch
+3. Merge develop into master
+4. Create a release in github
 
-This will create a `/build` folder in the root at the same level of `/src` folder.
-
-> TODO instructions to publish
+When you create the release in github, the github action will automatically publish the new changes in NPM.
 
 ## Playground
 
-We have a playground project inside `./playground` folder. In that project you can import `sunhammer-ui` library and test how it works in the same way other developers will use the library.
+Inside playground folder we have 2 folders:
 
-To use this playground and test your local changes in the library follow the next stpes:
+1. `/esm`: this folder contains a **typescript-react** project to test our library. This is a normal web application where we can use npm modules.
 
-1. Publish sunhammer-ui library locally
+In this project you can import `sunhammer-ui` library and test how it works in the same way other developers will use the library.
 
-`yarn publish:local`
+To use this **playground/esm** project and test your local changes run: `yarn playground:esm`.
 
-2. Start the playground local server:
+This commnad will build the library and publish it locally (using [yalc](https://www.npmjs.com/package/yalc)), then will start a server in `http://localhost:8080/` where you can see how each component can be included in a normal web application.
 
-`yarn playground:start`
+**Note:** Every time you make a change in the library, you'll have to run `yarn playground:esm.` command to update the sunhammer-ui dependency in the playground project.
 
-This will start a server in `http://localhost:8080/` where you can see how each component can be included in a normal web application.
+2. `/umd`: this folder contains an `index.html` and a `script.js` file to test the library using UMD modules with a `<script>` tag.
+   To use this **playground/umd** project and test your local changes run: `yarn playground:umd`.
+   This command will build the library and copy the `build` folder into `playground/umd`, then we can use something like:
 
-**Note:** Every time you make a change in the library, you'll have to run the above commands to update the sunhammer-ui dependency in playground.
+- Include a single component:
+
+```
+<link href="build/FitmentSelector/index.css" rel="stylesheet" type="text/css" />
+<script src="build/FitmentSelector/index.umd.js"></script>
+```
+
+- Include all components:
+
+```
+<link href="build/index.css" rel="stylesheet" type="text/css" />
+<script src="build/index.umd.js"></script>
+```

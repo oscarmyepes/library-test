@@ -1,0 +1,96 @@
+import {
+  Meta,
+  Story,
+  Canvas,
+  ArgsTable,
+  Source,
+} from '@storybook/addon-docs/blocks';
+import dedent from 'ts-dedent';
+import CategoryList from '../CategoryList';
+import { CategoryComp } from './NestedInterfaces';
+import { categoriesList } from '../../../__mocks__/categories';
+
+<Meta
+  title="Components/CategoryList"
+  component={CategoryList}
+  argTypes={{
+    itemsPerPage: {
+      control: {
+        type: 'select',
+        options: [5, 10, 20, 50, 100],
+      },
+    },
+  }}
+/>
+
+export const Template = (args) => <CategoryList {...args} />;
+
+# CategoryList
+
+The `CategoryList` component renders a list of product categories, can be configured to show categories in a grid or in a list.
+
+When you use `<CategoryList />` component, you have to send all data. This component is useful if you don't want to use our API and you want to use you own data.
+
+## Basic
+
+<Canvas>
+  <Story
+    name="Basic"
+    args={{
+      list: categoriesList,
+      orientation: 'vertical',
+      itemsPerPage: 5,
+      totalPages: 10,
+    }}
+  >
+    {(args) => <CategoryList {...args} />}
+  </Story>
+</Canvas>
+
+## Styled horizontal
+
+<Canvas>
+  <Story
+    name="Styled horizontal"
+    args={{
+      list: categoriesList,
+      styled: true,
+      itemsPerPage: 5,
+      totalPages: 10,
+    }}
+  >
+    {(args) => <CategoryList {...args} />}
+  </Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={CategoryList} />
+
+## Category
+
+<ArgsTable of={CategoryComp} />
+
+## ClassNames you can override
+
+You can pass a className to the root element to customize styles:
+
+<Source
+  language="js"
+  code={dedent`<CategoryList className="my-class-name" />`}
+/>
+
+Also, you can override styles using specific class names:
+
+```
+// Class added when the list is displayed in horizontal mode
+.Sui-List--container
+
+.Sui-CategoryList--root
+
+.Sui-List--horizontal
+
+.Sui-CategoryList--image
+
+.Sui-CategoryList--title
+```

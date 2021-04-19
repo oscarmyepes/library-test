@@ -4,6 +4,7 @@
   cursor: pointer;
   border: none;
   height: var(--sui-input-height);
+  border-radius: 3px;
   &.primary {
     background-color: var(--sui-primary-color);
     color: #fff;

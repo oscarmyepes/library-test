@@ -1,250 +1,287 @@
 import { fireEvent, render, waitFor } from '@testing-library/react';
-import fetchMock from 'fetch-mock';
 import * as React from 'react';
-import { act } from 'react-dom/test-utils';
-import FitmentSelector from './FitmentSelector';
-import { CustomSelect } from './models';
+import { delay } from '../../__mocks__/utils';
 import {
   createLabels,
   createMakeLabelData,
   createModelLabelData,
+  createOptionalLabels,
   createSubModelLabelData,
   createYearLabelData,
-} from './__mocks__/labels';
+} from '../FitmentSelectorWrapper/__mocks__/labels';
+import FitmentSelector from './FitmentSelector';
+import { FitmentSelectorProps } from './models';
 
-const LABELS = createLabels();
-const YEARS = createYearLabelData();
-const MAKERS = createMakeLabelData();
-const MODELS = createModelLabelData();
-const SUB_MODELS = createSubModelLabelData();
-
-/*
-  Note: This component makes an API call on first render, for that reason we have to use
-  waitFor and act to wait for async actions to finish.
-*/
 describe('FitmentSelector', () => {
-  beforeAll(() => {
-    fetchMock.get(`${process.env.API_URL}/labels`, LABELS);
+  const LABELS: FitmentSelectorProps['labels'] = createLabels();
+  const OPTIONAL_LABELS: FitmentSelectorProps['labels'] = createOptionalLabels();
 
-    fetchMock.get(`${process.env.API_URL}/Year`, YEARS, {
-      delay: 0,
-    });
-    fetchMock.get(`${process.env.API_URL}/Make`, MAKERS, {
-      delay: 0,
-    });
-    fetchMock.get(`${process.env.API_URL}/Model`, MODELS, { delay: 0 });
-    fetchMock.get(`${process.env.API_URL}/Submodel`, SUB_MODELS, { delay: 0 });
+  const YEARS = createYearLabelData();
+  const MAKERS = createMakeLabelData();
+  const MODELS = createModelLabelData();
+  const SUBMODELS = createSubModelLabelData();
+
+  it('Should render received label', async () => {
+    const { findAllByRole } = render(
+      <FitmentSelector
+        searchButtonText="Ok"
+        clearButtonText="Clear"
+        labels={LABELS}
+        labelsData={{ [LABELS[0].name]: [{ id: 1, name: '2021' }] }}
+        selectedValues={{}}
+        onChange={() => null}
+        onSubmit={() => null}
+      />
+    );
+
+    const selects = await findAllByRole('listbox');
+    expect(selects.length).toBe(LABELS.length);
   });
 
-  afterAll(() => fetchMock.reset());
+  it('Should render selects with selectedValues and call submit function', async () => {
+    const data = {
+      [LABELS[0].name]: YEARS,
+      [LABELS[1].name]: MAKERS,
+      [LABELS[2].name]: MODELS,
+      [LABELS[3].name]: SUBMODELS,
+    };
+    const selectedValues = {
+      [LABELS[0].name]: YEARS[0].id,
+      [LABELS[1].name]: MAKERS[2].id,
+      [LABELS[2].name]: MODELS[3].id,
+    };
 
-  describe('When using native selector', () => {
-    it('Should render FitmentSelector with custom button text', async () => {
-      const { getByText, findAllByRole } = render(
-        <FitmentSelector searchButtonText="Ok" clearButtonText="Clear" />
-      );
+    const onSubmit = jest.fn();
 
-      const okButton = getByText('Ok');
-      // Need to wait the render to prevent "Can't perform a React state update on an unmounted component" warning
-      await findAllByRole('listbox');
-      waitFor(() => expect(getByText('Ok')).toBeDefined());
-      expect((okButton as HTMLInputElement).disabled).toBeTruthy();
-      expect(getByText('Clear')).toBeDefined();
-    });
+    const { findAllByRole, findByText } = render(
+      <FitmentSelector
+        searchButtonText="Ok"
+        clearButtonText="Clear"
+        labels={LABELS}
+        labelsData={data}
+        selectedValues={selectedValues}
+        onChange={() => null}
+        onSubmit={onSubmit}
+      />
+    );
+    const selects = (await findAllByRole('listbox')) as HTMLSelectElement[];
+    expect(selects[0].value).toEqual(String(selectedValues[LABELS[0].name]));
+    expect(selects[1].value).toEqual(String(selectedValues[LABELS[1].name]));
+    expect(selects[2].value).toEqual(String(selectedValues[LABELS[2].name]));
 
-    it('Should disable from second select to last one on first render', async () => {
-      const { findAllByRole } = render(<FitmentSelector />);
-      const fitmentSelector = (await findAllByRole(
-        'listbox'
-      )) as HTMLInputElement[];
+    const submitBtn = await findByText('Ok');
+    // Submit button should be disabled until user selects all labels
+    expect(submitBtn).toBeDisabled();
 
-      await checkDisabledFields(fitmentSelector, 0);
-    });
-
-    it('Should enable second select when first select has selected value', async () => {
-      const { findAllByRole } = render(<FitmentSelector />);
-      const fitmentSelector = (await findAllByRole(
-        'listbox'
-      )) as HTMLInputElement[];
-
-      await checkDisabledFields(fitmentSelector, 0);
-      fireEvent.change(fitmentSelector[0], { target: { value: 1 } });
-      await checkDisabledFields(fitmentSelector, 1);
-    });
-
-    it('Should enable third select when first and second select have selected value', async () => {
-      const { findAllByRole } = render(<FitmentSelector />);
-      const fitmentSelector = (await findAllByRole(
-        'listbox'
-      )) as HTMLInputElement[];
-
-      await checkDisabledFields(fitmentSelector, 0);
-      await act(async () => {
-        fireEvent.change(fitmentSelector[0], { target: { value: 1 } });
-      });
-      await checkDisabledFields(fitmentSelector, 1);
-      await act(async () => {
-        fireEvent.change(fitmentSelector[1], { target: { value: 1 } });
-      });
-      await checkDisabledFields(fitmentSelector, 2);
-    });
-
-    it('Should call onChange on every select change', async () => {
-      const onChange = jest.fn();
-      const { findAllByRole } = render(<FitmentSelector onChange={onChange} />);
-      const fitmentSelector = (await findAllByRole(
-        'listbox'
-      )) as HTMLInputElement[];
-
-      await checkDisabledFields(fitmentSelector, 0);
-      await act(async () => {
-        fireEvent.change(fitmentSelector[0], { target: { value: 1 } });
-      });
-      await checkDisabledFields(fitmentSelector, 1);
-      await waitFor(() =>
-        expect(onChange).toHaveBeenCalledWith(
-          LABELS.map((label, index) => ({
-            ...label,
-            value: index === 0 ? getLabelValue(label.name) : null,
-          }))
-        )
-      );
-      await act(async () => {
-        fireEvent.change(fitmentSelector[1], { target: { value: 1 } });
-      });
-      await waitFor(() =>
-        expect(onChange).toHaveBeenCalledWith(
-          LABELS.map((label, index) => ({
-            ...label,
-            value: index <= 1 ? getLabelValue(label.name) : null,
-          }))
-        )
-      );
-      await waitFor(() => expect(fitmentSelector[2].disabled).toBeFalsy());
-      await waitFor(() => expect(onChange).toHaveBeenCalledTimes(2));
-    });
-
-    it('Should enable Submit button when values are selected', async () => {
-      const onSubmit = jest.fn();
-      const { findAllByRole, findByText } = render(
-        <FitmentSelector onSubmit={onSubmit} searchButtonText="Search" />
-      );
-      const searchButton = await findByText('Search');
-      expect((searchButton as HTMLInputElement).disabled).toBeTruthy();
-
-      const fitmentSelector = (await findAllByRole(
-        'listbox'
-      )) as HTMLInputElement[];
-      await checkDisabledFields(fitmentSelector, 0);
-      fireEvent.change(fitmentSelector[0], { target: { value: 1 } });
-      await checkDisabledFields(fitmentSelector, 1);
-
-      expect((searchButton as HTMLInputElement).disabled).toBeFalsy();
-      fireEvent.click(searchButton);
-      expect(onSubmit).toHaveBeenCalledTimes(1);
-    });
-
-    it('Should clear selection', async () => {
-      const { findAllByRole, findByText } = render(
-        <FitmentSelector clearButtonText="Clear" />
-      );
-
-      const fitmentSelector = (await findAllByRole(
-        'listbox'
-      )) as HTMLInputElement[];
-      await checkDisabledFields(fitmentSelector, 0);
-      fireEvent.change(fitmentSelector[0], { target: { value: 1 } });
-      await checkDisabledFields(fitmentSelector, 1);
-      const clearButton = await findByText('Clear');
-      fireEvent.click(clearButton);
-      // After clear all selectors must be reseted having value === ''
-      fitmentSelector.forEach((selector) => expect(selector.value).toBe(''));
-      await checkDisabledFields(fitmentSelector, 0);
-    });
-
-    it('Should set vertical class when orientation is vertical', async () => {
-      const { container, findAllByRole } = render(
-        <FitmentSelector orientation="vertical" styled={true} />
-      );
-      const fitmentSelector = (await findAllByRole(
-        'listbox'
-      )) as HTMLInputElement[];
-      expect(container.firstElementChild.className).toContain('vertical');
-      fitmentSelector.forEach((_, index) => {
-        expect(container.firstElementChild.children[index].className).toContain(
-          'StyledSearchBtnVertical'
-        );
-      });
+    fireEvent.change(selects[3], { target: { value: 1 } });
+    expect(submitBtn).toBeEnabled();
+    submitBtn.click();
+    expect(onSubmit).toHaveBeenCalledWith({
+      ...selectedValues,
+      [LABELS[3].name]: String(SUBMODELS[0].id),
     });
   });
 
-  describe('When using Custom selector', () => {
-    it('Should render custom select and call internal onChange', async () => {
-      const onChange = jest.fn();
-      const { findAllByTestId } = render(
-        <FitmentSelector
-          components={{
-            select: function CustomSelect(props: CustomSelect) {
-              return (
-                <select
-                  {...props}
-                  data-testid="custom-select"
-                  onChange={(e) => {
-                    onChange(e);
-                    props.onChange(e.currentTarget.value);
-                  }}
-                >
-                  {(props.options || []).map((option) => (
-                    <option
-                      key={option.id}
-                      role="option"
-                      aria-selected={false}
-                      value={option.id}
-                    >
-                      {option.name}
-                    </option>
-                  ))}
-                </select>
-              );
-            },
-          }}
-        />
-      );
+  it('Should validate selectedValues', async () => {
+    const data = {
+      [LABELS[0].name]: YEARS,
+      [LABELS[1].name]: MAKERS,
+      [LABELS[2].name]: MODELS,
+    };
+    const selectedValues = {
+      [LABELS[0].name]: YEARS[0].id,
+      [LABELS[1].name]: 'Worng id',
+      [LABELS[2].name]: MODELS[3].id,
+    };
 
-      const fitmentSelector = (await findAllByTestId(
-        'custom-select'
-      )) as HTMLInputElement[];
-      expect(fitmentSelector).toHaveLength(LABELS.length);
-      fireEvent.change(fitmentSelector[0], { target: { value: 1 } });
-      await waitFor(() =>
-        expect(fitmentSelector[1].childNodes).toHaveLength(MAKERS.length)
-      );
+    const onSubmit = jest.fn();
 
-      expect(onChange).toHaveBeenCalledTimes(1);
+    const { findAllByRole } = render(
+      <FitmentSelector
+        labels={LABELS}
+        labelsData={data}
+        selectedValues={selectedValues}
+        onSubmit={onSubmit}
+      />
+    );
+    const selects = (await findAllByRole('listbox')) as HTMLSelectElement[];
+    expect(selects[0].value).toEqual(String(selectedValues[LABELS[0].name]));
+    /*
+      We are sending an Id that does not exists for the second select, 
+      so we expect the second and third selects to don't have a selected value.
+    */
+    expect(selects[1].value).toEqual('');
+    expect(selects[2].value).toEqual('');
+    expect(selects[1]).toBeEnabled();
+    expect(selects[2]).toBeDisabled();
+  });
+
+  it('Should call onChange with selected values', async () => {
+    const data = {
+      [LABELS[0].name]: YEARS,
+    };
+    const onChange = jest.fn();
+
+    const { findAllByRole } = render(
+      <FitmentSelector
+        labels={LABELS}
+        labelsData={data}
+        selectedValues={{}}
+        onChange={onChange}
+        onSubmit={() => null}
+      />
+    );
+    const selects = (await findAllByRole('listbox')) as HTMLSelectElement[];
+    fireEvent.change(selects[0], { target: { value: 1 } });
+
+    expect(onChange).toHaveBeenCalledWith(LABELS[0].name, {
+      [LABELS[0].name]: '1',
     });
+  });
+
+  it('Should call onChange with cleared data when user changes one of the previous selects', async () => {
+    const data = {
+      [LABELS[0].name]: YEARS,
+      [LABELS[1].name]: MAKERS,
+      [LABELS[2].name]: MODELS,
+    };
+    const selectedValues = {
+      [LABELS[0].name]: YEARS[0].id,
+      [LABELS[1].name]: MAKERS[2].id,
+      [LABELS[2].name]: MODELS[3].id,
+    };
+    const onChange = jest.fn();
+
+    const { findAllByRole } = render(
+      <FitmentSelector
+        labels={LABELS}
+        labelsData={data}
+        selectedValues={selectedValues}
+        onChange={onChange}
+        onSubmit={() => null}
+      />
+    );
+
+    const selects = (await findAllByRole('listbox')) as HTMLSelectElement[];
+    fireEvent.change(selects[0], { target: { value: YEARS[0].id } });
+
+    expect(onChange).toHaveBeenCalledWith(LABELS[0].name, {
+      [LABELS[0].name]: '1',
+    });
+  });
+
+  it('Should call submit automatically when autocommit is TRUE', async () => {
+    const onSubmit = jest.fn();
+    const labels = LABELS.slice(0, 3);
+    const data = {
+      [LABELS[0].name]: YEARS,
+      [LABELS[1].name]: MAKERS,
+      [LABELS[2].name]: MODELS,
+    };
+
+    const selectedValues = {
+      [LABELS[0].name]: YEARS[0].id,
+      [LABELS[1].name]: MAKERS[2].id,
+    };
+    const lastLabelIndex = labels.length - 1;
+
+    const { findAllByRole } = render(
+      <FitmentSelector
+        labels={labels}
+        labelsData={data}
+        selectedValues={selectedValues}
+        onChange={() => null}
+        onSubmit={onSubmit}
+        autocommit
+        autocommitDelay={10}
+      />
+    );
+    const selects = (await findAllByRole('listbox')) as HTMLSelectElement[];
+    fireEvent.change(selects[lastLabelIndex], {
+      target: { value: MODELS[0].id },
+    });
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith({
+        ...selectedValues,
+        [LABELS[lastLabelIndex].name]: String(MODELS[0].id),
+      })
+    );
+  });
+
+  it('Should NOT call submit automatically when user changes a previous select value', async () => {
+    const onSubmit = jest.fn();
+    const labels = LABELS.slice(0, 3);
+    const data = {
+      [LABELS[0].name]: YEARS,
+      [LABELS[1].name]: MAKERS,
+      [LABELS[2].name]: MODELS,
+    };
+
+    const selectedValues = {
+      [LABELS[0].name]: YEARS[0].id,
+      [LABELS[1].name]: MAKERS[2].id,
+    };
+
+    const { findAllByRole } = render(
+      <FitmentSelector
+        labels={labels}
+        labelsData={data}
+        selectedValues={selectedValues}
+        onChange={() => null}
+        onSubmit={onSubmit}
+        autocommit
+        autocommitDelay={10}
+      />
+    );
+    const selects = (await findAllByRole('listbox')) as HTMLSelectElement[];
+    fireEvent.change(selects[labels.length - 1], {
+      target: { value: MODELS[0].id },
+    });
+    await delay(5);
+    fireEvent.change(selects[labels.length - 2], {
+      target: { value: MAKERS[0].id },
+    });
+    await delay(12);
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(0));
+  });
+
+  it('Should show optional labels when the last label has a value an there are optional labels data', async () => {
+    const labels = LABELS.slice(0, 3);
+    const data = {
+      [LABELS[0].name]: YEARS,
+      [LABELS[1].name]: MAKERS,
+      [LABELS[2].name]: MODELS,
+    };
+
+    const selectedValues = {
+      [LABELS[0].name]: YEARS[0].id,
+      [LABELS[1].name]: MAKERS[2].id,
+    };
+    const { findAllByRole, findByText } = render(
+      <FitmentSelector
+        labels={labels}
+        optionalLabels={OPTIONAL_LABELS}
+        labelsData={data}
+        selectedValues={selectedValues}
+        onChange={() => null}
+        onSubmit={() => null}
+        autocommit
+        autocommitDelay={10}
+        optionalLabelsTitle="I am the optional labels section"
+      />
+    );
+    const selects = (await findAllByRole('listbox')) as HTMLSelectElement[];
+
+    expect(selects).toHaveLength(labels.length);
+
+    fireEvent.change(selects[labels.length - 1], {
+      target: { value: MODELS[0].id },
+    });
+
+    const allSelects = (await findAllByRole('listbox')) as HTMLSelectElement[];
+    expect(allSelects).toHaveLength(labels.length + OPTIONAL_LABELS.length);
+
+    await findByText('I am the optional labels section');
   });
 });
-
-function getLabelValue(label) {
-  switch (label) {
-    case 'Year':
-      return YEARS[0];
-    case 'Make':
-      return MAKERS[0];
-    default:
-      return null;
-  }
-}
-
-async function checkDisabledFields(
-  fitmentSelector: HTMLInputElement[],
-  indexLastEnabled: number
-) {
-  await waitFor(() =>
-    fitmentSelector.map((selector, index) =>
-      index <= indexLastEnabled
-        ? expect(selector.disabled).toBeFalsy()
-        : expect(selector.disabled).toBeTruthy()
-    )
-  );
-}

@@ -1,0 +1,37 @@
+.root {
+  display: flex;
+  align-items: center;
+}
+
+.angleIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 1em;
+  height: 1em;
+  font-size: 1.25rem;
+}
+
+.angleIconRight {
+  @extend .angleIcon;
+  transform: rotate(180deg);
+}
+
+.pageLink {
+  color: inherit;
+  padding: 0 0.5rem;
+  text-decoration: unset;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.disabled {
+  opacity: 0.5;
+}
+
+.active {
+  text-decoration: underline;
+  opacity: 1;
+  font-weight: bold;
+}

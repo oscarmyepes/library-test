@@ -1,43 +1,42 @@
 import classnames from 'classnames';
-import debounce from 'lodash/fp/debounce';
 import * as React from 'react';
+import LoadingIndicator from '../../common/LoadingIndicator/LoadingIndicator';
 import CrossIcon from '../../icons/CrossIcon';
-import restFactory from '../../utils/restFactory';
-import { ResultItem, SearchBarProps } from './models';
-import styles from './searchBar.scss';
+import { RenderListData, SearchBarProps } from './models';
 import SearchBarSuggestions from './SearchBarSuggestions';
-import { DEFAULT_VISIBLE_FIELDS } from './SearchResultItem';
+import styles from './styles/searchBar.scss';
+
+export const KEY_STROKE_DELAY = 400;
 
 const SearchBar = ({
   className,
-  keystrokeDelay = 250,
   linkEl = 'a',
-  listTitle,
-  maxResults,
-  minSearchCharacters = 3,
   noResultsText,
   placeholder = 'Enter keyword',
-  resultsHeaderText,
   searchButtonText = 'Search',
   showCloseIcon,
-  site,
   styled,
-  visibleFields = DEFAULT_VISIBLE_FIELDS,
+  onSubmit,
+  showNoResultsMsg = true,
+  searchValue: searchString = '',
+  isLoading,
+  onChange,
+  onClear,
+  renderNoResults,
+  sections,
+  renderList,
+  onItemClick,
 }: SearchBarProps) => {
-  const [searchValue, setSearchValue] = React.useState('');
-  // resultsFor is the last successful text searched
-  const [resultsFor, setResultsFor] = React.useState('');
-  const [suggestions, setSuggestions] = React.useState<ResultItem[]>([]);
+  const [searchValue, setSearchValue] = React.useState(searchString);
   // Flag to control if suggestions should be visible or not, this is useful
   // when user clicks oustside the search bar container, so we can hide the result list.
-  const [shouldShowSuggestions, setShowSuggestions] = React.useState(true);
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState('');
+  const [shouldShowSuggestions, setShowSuggestions] = React.useState(false);
   // When user is navigating using the keyboard we track the index of the selected result item to
   // trigger the click event when user hits enter key
   const [focusedItemIndex, setFocusedItemIndex] = React.useState<number>(null);
   const resultItemRefs: HTMLElement[] = [];
-  const ref = React.useRef(null);
+  const formRef = React.useRef(null);
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
 
   const escapeListener = React.useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape') {
@@ -48,11 +47,11 @@ const SearchBar = ({
   const clickListener = React.useCallback(
     (e: MouseEvent) => {
       // This happens when user clicks outside the SearchBar component
-      if (!ref.current.contains(e.target)) {
+      if (!formRef.current.contains(e.target)) {
         setShowSuggestions(false);
       }
     },
-    [ref.current]
+    [formRef.current]
   );
 
   React.useEffect(() => {
@@ -71,140 +70,106 @@ const SearchBar = ({
     }
   }, [shouldShowSuggestions]);
 
-  const loadData = React.useCallback(
-    debounce(keystrokeDelay)(async (value: string) => {
-      try {
-        if (value.length >= minSearchCharacters) {
-          const query = {
-            maxcount: maxResults,
-            search: value,
-            site,
-          };
-          setLoading(true);
-          const response = await restFactory.get<{ result: ResultItem[] }>(
-            `${process.env.SEARCH_API_URL}/products`,
-            query
-          );
-          setError('');
-          setSuggestions(response.result);
-          setLoading(false);
-          setResultsFor(value);
-        } else {
-          setSuggestions([]);
-          setResultsFor('');
-        }
-      } catch (reqError) {
-        setSuggestions([]);
-        setLoading(false);
-        setResultsFor(value);
-        setError(reqError.message || 'Error');
-      }
-    }),
-    [maxResults, site, keystrokeDelay]
-  );
+  React.useEffect(() => {
+    setSearchValue(searchString);
+  }, [searchString]);
 
-  const handleArrowKeys = (keyCode: number) => {
-    setFocusedItemIndex((index) => {
-      const currIndex = index ?? -1;
-      if (keyCode === 40) {
-        return (currIndex + 1) % suggestions.length;
-      } else {
-        return currIndex > 0 ? currIndex - 1 : suggestions.length - 1;
-      }
-    });
+  const onContainerKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const { key } = event;
+
+    switch (key) {
+      case 'ArrowDown':
+        showSuggestionsOnArrowKeyDown();
+        event.preventDefault();
+        break;
+    }
   };
 
-  const onChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeInternal = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value;
     setSearchValue(value);
     setShowSuggestions(true);
-    await loadData(value);
+    onChange?.(value);
   };
 
-  const onInputFocus = () => setShowSuggestions(true);
+  const showSuggestionsOnArrowKeyDown = () => {
+    if (searchValue) {
+      setShowSuggestions(true);
+    }
+  };
 
-  const onInputKeyDown = (event) => {
-    const { keyCode } = event;
-
-    switch (keyCode) {
-      case 40: // DOWN
-      case 38: // UP
-        handleArrowKeys(keyCode);
-        break;
-      case 13: {
-        // ENTER
-        const selectedResult = resultItemRefs[focusedItemIndex];
-        if (event.keyCode === 229 || !selectedResult) {
-          break;
-        }
-        selectedResult.click();
-        break;
-      }
+  const onInputFocus = () => {
+    setFocusedItemIndex(-1);
+    if (searchValue) {
+      setShowSuggestions(true);
     }
   };
 
   const clear = () => {
     setSearchValue('');
-    setSuggestions([]);
-    setResultsFor('');
+    onClear?.();
+    searchInputRef.current.focus();
   };
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const _onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!resultItemRefs[focusedItemIndex]) {
+      onSubmit?.(searchValue);
+      setShowSuggestions(false);
+    }
   };
 
-  const showResultsHeader = () => !!resultsHeaderText;
-
-  const showSuggestions = () => suggestions.length && shouldShowSuggestions;
-
-  const showNoResults = () =>
-    !loading &&
-    searchValue === resultsFor &&
-    searchValue.length >= minSearchCharacters &&
-    !suggestions.length;
-
-  const renderNoResultsText = (message: string) => (
-    <p
-      className={classnames({
-        [styles.StyledNoResults]: styled,
-      })}
-    >
-      {message}
-    </p>
-  );
+  const showSuggestions = () =>
+    sections.reduce((acc, item) => acc + (item?.data?.list?.length || 0), 0) &&
+    shouldShowSuggestions;
 
   const renderErrorOrNoResultsMessage = () => {
-    if (error) {
-      return renderNoResultsText(
-        `${error}. Please check your stite property${
-          site ? ` (${site}).` : '.'
-        }`
-      );
-    } else if (showNoResults()) {
-      return renderNoResultsText(
-        noResultsText || `No results for: ${resultsFor}`
-      );
+    if (renderNoResults) {
+      return renderNoResults();
     }
-    return null;
+    return noResultsText ? <p>{noResultsText}</p> : null;
   };
 
   const renderLoadingIndicator = () => (
-    <div
-      className={classnames(
-        { [styles.StyledProgressBar]: styled },
-        'Sui-SearchBar--loading-indicator'
-      )}
+    <LoadingIndicator
+      type="linear"
+      className="Sui-SearchBar--loading-indicator"
     />
   );
 
+  const renderSuggestions = () =>
+    renderList ? (
+      renderList(
+        sections.reduce(
+          (acc, item) => ({
+            ...acc,
+            [item.type]: { data: item?.data, title: item.title },
+          }),
+          {}
+        ) as RenderListData
+      )
+    ) : (
+      <SearchBarSuggestions
+        styled={styled}
+        sections={sections}
+        linkEl={linkEl}
+        onItemClick={onItemClick}
+      />
+    );
+
   return (
-    <>
+    <div
+      className={classnames(styles.searchBarRoot, className)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={onContainerKeyDown}
+    >
       <form
-        ref={ref}
-        className={classnames(styles.searchBarContainer, className)}
-        onSubmit={onSubmit}
+        ref={formRef}
+        className={classnames(styles.searchBarContainer)}
+        onSubmit={_onSubmit}
       >
-        {loading && styled ? renderLoadingIndicator() : null}
+        {isLoading && styled ? renderLoadingIndicator() : null}
         <div className={styles.searchBarInputContainer}>
           <div className={styles.inputContainer}>
             <input
@@ -215,15 +180,15 @@ const SearchBar = ({
                 },
                 'Sui-SearchBar--search-input'
               )}
+              ref={searchInputRef}
               id="sui-search-bar-input"
               name="sui-search-bar-input"
               autoComplete="off"
               placeholder={placeholder || ''}
               aria-label="search-input"
               value={searchValue}
-              onChange={onChange}
+              onChange={onChangeInternal}
               onFocus={onInputFocus}
-              onKeyDown={onInputKeyDown}
             />
             {showCloseIcon && searchValue && (
               <button
@@ -240,7 +205,7 @@ const SearchBar = ({
           <button
             className={classnames(
               {
-                [`SuiButton primary ${styles.StyledButton}`]: styled,
+                [`SuiButton primary ${styles.styledButton}`]: styled,
               },
               'Sui-SearchBar--search-button'
             )}
@@ -249,23 +214,10 @@ const SearchBar = ({
             {searchButtonText}
           </button>
         </div>
-        {renderErrorOrNoResultsMessage()}
-        {showSuggestions() ? (
-          <SearchBarSuggestions
-            showResultsHeader={showResultsHeader}
-            styled={styled}
-            resultsHeaderText={resultsHeaderText}
-            resultsFor={resultsFor}
-            listTitle={listTitle}
-            suggestions={suggestions}
-            linkEl={linkEl}
-            focusedItemIndex={focusedItemIndex}
-            resultItemRefs={resultItemRefs}
-            visibleFields={visibleFields}
-          />
-        ) : null}
+        {showNoResultsMsg && renderErrorOrNoResultsMessage()}
+        {showSuggestions() ? renderSuggestions() : null}
       </form>
-    </>
+    </div>
   );
 };
 

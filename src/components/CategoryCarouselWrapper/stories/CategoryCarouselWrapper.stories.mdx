@@ -1,0 +1,58 @@
+import {
+  Meta,
+  Story,
+  Canvas,
+  ArgsTable,
+  Source,
+} from '@storybook/addon-docs/blocks';
+import dedent from 'ts-dedent';
+import CategoryCarouselWrapper from '../CategoryCarouselWrapper';
+import { ResponsiveObjectComp } from '../../CategoryCarousel/stories/NestedInterfaces';
+
+<Meta
+  title="Wrappers/CategoryCarouselWrapper"
+  component={CategoryCarouselWrapper}
+/>
+
+export const Template = (args) => <CategoryCarouselWrapper {...args} />;
+
+# CategoryCarouselWrapper
+
+`CategoryCarouselWrapper` fetches a list of categories from our API and displays the list of categories in a carousel.
+
+If you want to use your own data and for more information about category carousel component, please have a look at [CategoryCarousel](/?path=/docs/components-categorycarousel--basic)
+
+## Basic
+
+<Canvas>
+  <Story name="Basic" args={{}}>
+    {(args) => <CategoryCarouselWrapper {...args} />}
+  </Story>
+</Canvas>
+
+## Category
+
+<ArgsTable of={CategoryCarouselWrapper} />
+
+## Responsive Object
+
+<ArgsTable of={ResponsiveObjectComp} />
+
+## ClassNames you can override
+
+You can pass a className to the root element to customize styles:
+
+<Source
+  language="js"
+  code={dedent`<CategoryCarouselWrapper className="my-class-name" />`}
+/>
+
+Also, you can override styles using specific class names:
+
+```
+.Sui-CategoryList--image-container
+
+.Sui-CategoryList--image
+
+.Sui-CategoryList--title
+```

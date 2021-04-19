@@ -1,0 +1,90 @@
+import {
+  Meta,
+  Story,
+  Canvas,
+  ArgsTable,
+  Source,
+} from '@storybook/addon-docs/blocks';
+import SpecificationSearch from '../SpecificationSearch';
+import { data } from './data';
+import styles from './story.scss';
+
+<Meta title="Components/SpecificationSearch" component={SpecificationSearch} />
+
+export const Template = (args) => <SpecificationSearch {...args} />;
+
+# SpecificationSearch
+
+The specification search component receives an array of tuples and shows matched results based on a search string.
+The first item in the tuple is the `attribute name` and the second one is `attributes value`.
+
+Example:
+
+If you have a product with these attributes
+
+<Source
+  language="js"
+  code={`
+{
+  "stockid": "AB-12345",
+  "brand_name": "Sunhammer",
+  "condition": "New",
+  "item_number": "37050-6",
+  "engine: "Toyota",
+};
+  `}
+/>
+
+You can transform that object to an array of tuples to something like this::
+
+<Source
+  language="js"
+  code={`
+[
+  ["Stock ID", "AB-12345"],
+  ["Brand", "Sunhammer"],
+  ["Condition", "New"],
+  ["Item Number", "37050-6"],
+  ['Engine Make', 'Toyota'],
+];
+  `}
+/>
+
+When users start typing in the search bar, the component will show a list of matches based of the values in the tuple you sent to the component.
+
+# Basic
+
+<Canvas>
+  <Story name="Basic" args={{ data: data }}>
+    {(args) => <SpecificationSearch className={styles.story} {...args} />}
+  </Story>
+</Canvas>
+
+## Styled
+
+<Canvas>
+  <Story name="Styled" args={{ data: data, styled: true, showClearIcon: true }}>
+    {(args) => <SpecificationSearch className={styles.story} {...args} />}
+  </Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={SpecificationSearch} />
+
+## ClassNames you can override
+
+You can pass a className to the root element to customize styles:
+
+<Source
+  language="js"
+  code={`<SpecificationSearch className="my-class-name" />`}
+/>
+
+Also, you can override styles using specific class names:
+
+```
+.Sui-SpecificationSearch--suggestions
+.Sui-SpecificationSearch--clear-button
+.Sui-SpecificationSearch--search-icon
+```

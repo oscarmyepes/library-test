@@ -1,4 +1,4 @@
-export function toCurrency(value: number, locale = 'es-US', currency = 'USD') {
+export function toCurrency(value: number, locale = 'en-US', currency = 'USD') {
   if (Number.isNaN(value)) {
     return '';
   }
@@ -6,4 +6,8 @@ export function toCurrency(value: number, locale = 'es-US', currency = 'USD') {
     currency,
     style: 'currency',
   }).format(value);
+}
+
+export function toLocaleNumber(value: number, locale = 'en-US') {
+  return new Intl.NumberFormat(locale).format(Number(value));
 }
