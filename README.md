@@ -1,3 +1,5 @@
+[![version][version-badge]][package]
+
 # Sunhammer
 
 `sunhammer-ui` is a library of [React](https://reactjs.org/) components that helps you build e-commerce sites faster and easier.
