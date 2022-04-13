@@ -18,3 +18,5 @@ console.log(
   "FIREBASE_ADMIN_CLIENT_EMAIL3",
   process.env.FIREBASE_ADMIN_CLIENT_EMAIL3
 );
+
+console.log("CONCATENATED", process.env.CONCATENATED);
