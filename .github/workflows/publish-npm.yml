@@ -10,25 +10,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v2          
       - name: Install dependencies
-        run: npm ci
-      - name: Branch name GITHUB_REF_NAME
-        run: echo running on branch ${GITHUB_REF_NAME}
-      - name: Assigning branch name to environment variable
-        run: echo "NEXT_PUBLIC_VERCEL_ENV=${GITHUB_REF_NAME,,}" >> $GITHUB_ENV
-      - name: Conditional staging
-        if: ${{ github.ref_name == 'staging' }}
+        run: npm ci      
+      - if: ${{ github.ref_name == 'staging' }}
         run: echo "NEXT_PUBLIC_VERCEL_ENV=STAGING" >> $GITHUB_ENV
-      - name: Conditional prod
-        if: ${{ github.ref_name == 'master' }}
-        run: echo "NEXT_PUBLIC_VERCEL_ENV=PROD" >> $GITHUB_ENV
+      - if: ${{ github.ref_name == 'master' }}
+        run: echo "NEXT_PUBLIC_VERCEL_ENV=PROD" >> $GITHUB_ENV      
       - name: Post Deploy Script
         run: npm run post-deploy
         env:
-          node-version: "16.x"
-          FIREBASE_ADMIN_CLIENT_EMAIL: "${{ secrets.FIREBASE_ADMIN_CLIENT_EMAIL }}"
-          STAGING_FIREBASE_ADMIN_CLIENT_EMAIL: "${{ secrets.STAGING_FIREBASE_ADMIN_CLIENT_EMAIL }}"
-          FIREBASE_ADMIN_CLIENT_EMAIL2: "${{ secrets[format(env.NEXT_PUBLIC_VERCEL_ENV, '_FIREBASE_ADMIN_CLIENT_EMAIL')] }}"
-          FIREBASE_ADMIN_CLIENT_EMAIL3: ${{format(env.NEXT_PUBLIC_VERCEL_ENV, '_FIREBASE_ADMIN_CLIENT_EMAIL')}}
-          CONCATENATED: ${{ secrets[format('{0}_{1}', env.NEXT_PUBLIC_VERCEL_ENV, 'FIREBASE_ADMIN_CLIENT_EMAIL')] }}
+          node-version: '16.x'
+          FIREBASE_ADMIN_CLIENT_EMAIL: ${{ secrets[format('{0}_{1}', env.NEXT_PUBLIC_VERCEL_ENV, 'FIREBASE_ADMIN_CLIENT_EMAIL')] }}
+          FIREBASE_ADMIN_PRIVATE_KEY: ${{ secrets[format('{0}_{1}', env.NEXT_PUBLIC_VERCEL_ENV, 'FIREBASE_ADMIN_PRIVATE_KEY')] }}
+          WEBSITE_ADDRESS: ${{ secrets[format('{0}_{1}', env.NEXT_PUBLIC_VERCEL_ENV, 'WEBSITE_ADDRESS')] }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets[format('{0}_{1}', env.NEXT_PUBLIC_VERCEL_ENV, 'NEXT_PUBLIC_FIREBASE_PROJECT_ID')] }}
