@@ -21,4 +21,5 @@ console.log(
 const value = process.env.FIREBASE_ADMIN_CLIENT_EMAIL + "in script";
 console.log("XXXXXXXXXXXXXX", value);
 
-console.log(process.env);
+console.log(process.env.FIREBASE_ADMIN_CLIENT_EMAIL2);
+console.log(process.env.FIREBASE_ADMIN_CLIENT_EMAIL3);
