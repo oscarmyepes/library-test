@@ -18,11 +18,11 @@ jobs:
       - name: Assigning branch name to environment variable
         run: echo "NEXT_PUBLIC_VERCEL_ENV=${GITHUB_REF_NAME,,}" >> $GITHUB_ENV
       - name: Conditional staging
-        run: echo Is staging
         if: ${{ github.ref_name == 'staging' }}
+        run: echo "NEXT_PUBLIC_VERCEL_ENV=STAGING"
       - name: Conditional prod
-        run: echo Is staging
         if: ${{ github.ref_name == 'master' }}
+        run: echo "NEXT_PUBLIC_VERCEL_ENV=PROD"
       - name: Post Deploy Script
         run: npm run post-deploy
         env:
@@ -34,5 +34,3 @@ jobs:
           NEXT_PUBLIC_FIREBASE_PROJECT_ID: "${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}"
           FIREBASE_ADMIN_CLIENT_EMAIL2: ${{secrets[format(env.NEXT_PUBLIC_VERCEL_ENV, '_FIREBASE_ADMIN_CLIENT_EMAIL')]}}
           FIREBASE_ADMIN_CLIENT_EMAIL3: ${{format(env.NEXT_PUBLIC_VERCEL_ENV, '_FIREBASE_ADMIN_CLIENT_EMAIL')}}
-          TEST: ${{ secrets[steps.vars.outputs.NEXT_PUBLIC_VERCEL_ENV] }}
-          TEST2: $ {{ steps.vars.outputs.NEXT_PUBLIC_VERCEL_ENV }}
