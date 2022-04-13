@@ -1,28 +1,27 @@
-name: Publish library to npm 
+name: Run Post Deploy script
 
 on:
   push:
-    branches: [ master ]
+    branches: [master, staging]
 
 jobs:
-  publish:
+  pub-sub:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: node
-        uses: actions/setup-node@v2
-        with:
-          node-version: '12.x'
-          registry-url: 'https://registry.npmjs.org'
-      - name: Install deps
-        run: yarn
-      - name: Build
-        run: yarn build
+      - name: Use Node.js
+        uses: actions/setup-node@v2          
+      - name: Install dependencies
+        run: npm ci
+      - name: Branch name GITHUB_REF_NAME
+        run: echo running on branch ${GITHUB_REF_NAME}
+      - name: Assigning branch name to environment variable
+        run: echo "NEXT_PUBLIC_VERCEL_ENV=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+      - name: Post Deploy Script
+        run: npm run post-deploy
         env:
-          API_URL: https://ui.sunhammer.io
-          LIBRARY_NAME: sunhammer-ui
-          STORY_BOOK_URL: https://ui.sunhammer.io/
-      - name: Publish
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}                    
+          node-version: '16.x'
+          FIREBASE_ADMIN_CLIENT_EMAIL: ${{secrets[format(env.NEXT_PUBLIC_VERCEL_ENV, '_FIREBASE_ADMIN_CLIENT_EMAIL')]}}
+          FIREBASE_ADMIN_PRIVATE_KEY: ${{secrets[format(env.NEXT_PUBLIC_VERCEL_ENV, '_FIREBASE_ADMIN_PRIVATE_KEY')]}}
+          WEBSITE_ADDRESS: ${{secrets[format(env.NEXT_PUBLIC_VERCEL_ENV, '_WEBSITE_ADDRESS')]}}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{secrets[format(env.NEXT_PUBLIC_VERCEL_ENV, '_NEXT_PUBLIC_FIREBASE_PROJECT_ID')]}}
