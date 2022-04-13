@@ -15,5 +15,3 @@ console.log(
 
 const value = process.env.FIREBASE_ADMIN_CLIENT_EMAIL + "in script";
 console.log("XXXXXXXXXXXXXX", value);
-
-throw new Error("Error in script");
