@@ -27,6 +27,7 @@ jobs:
         run: npm run post-deploy
         env:
           node-version: "16.x"
-          FIREBASE_ADMIN_CLIENT_EMAIL: "${{ secrets.FIREBASE_ADMIN_CLIENT_EMAIL }}"          
+          FIREBASE_ADMIN_CLIENT_EMAIL: "${{ secrets.FIREBASE_ADMIN_CLIENT_EMAIL }}"
+          STAGING_FIREBASE_ADMIN_CLIENT_EMAIL: "${{ secrets.STAGING_FIREBASE_ADMIN_CLIENT_EMAIL }}"
           FIREBASE_ADMIN_CLIENT_EMAIL2: ${{ secrets[format(env.NEXT_PUBLIC_VERCEL_ENV, '_FIREBASE_ADMIN_CLIENT_EMAIL')] }}
           FIREBASE_ADMIN_CLIENT_EMAIL3: ${{format(env.NEXT_PUBLIC_VERCEL_ENV, '_FIREBASE_ADMIN_CLIENT_EMAIL')}}

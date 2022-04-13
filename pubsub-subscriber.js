@@ -5,6 +5,11 @@ console.log(
 );
 
 console.log(
+  "STAGING_FIREBASE_ADMIN_CLIENT_EMAIL",
+  process.env.STAGING_FIREBASE_ADMIN_CLIENT_EMAIL
+);
+
+console.log(
   "FIREBASE_ADMIN_CLIENT_EMAIL2",
   process.env.FIREBASE_ADMIN_CLIENT_EMAIL2
 );
