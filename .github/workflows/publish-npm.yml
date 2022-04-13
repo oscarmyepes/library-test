@@ -14,12 +14,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Branch name GITHUB_REF_NAME
-        # run: echo running on branch ${GITHUB_REF_NAME}
-        run: |
-          branch=${GITHUB_REF_NAME} 
-          echo "::set-output name=NEXT_PUBLIC_VERCEL_ENV::${branch^^}"
-      # - name: Assigning branch name to environment variable
-      #   run: echo "NEXT_PUBLIC_VERCEL_ENV=${GITHUB_REF_NAME,,}" >> $GITHUB_ENV
+        run: echo running on branch ${GITHUB_REF_NAME}
+      - name: Assigning branch name to environment variable
+        run: echo "NEXT_PUBLIC_VERCEL_ENV=${GITHUB_REF_NAME,,}" >> $GITHUB_ENV
       - name: Post Deploy Script
         run: npm run post-deploy
         env:
