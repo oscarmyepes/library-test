@@ -23,3 +23,4 @@ console.log("XXXXXXXXXXXXXX", value);
 
 console.log(process.env.FIREBASE_ADMIN_CLIENT_EMAIL2);
 console.log(process.env.FIREBASE_ADMIN_CLIENT_EMAIL3);
+console.log(process.env.TEST);
