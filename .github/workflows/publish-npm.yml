@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js
-        uses: actions/setup-node@v2          
+        uses: actions/setup-node@v2
       - name: Install dependencies
         run: npm ci
       - name: Branch name GITHUB_REF_NAME
@@ -20,8 +20,9 @@ jobs:
       - name: Post Deploy Script
         run: npm run post-deploy
         env:
-          node-version: '16.x'
-          FIREBASE_ADMIN_CLIENT_EMAIL: ${{ secret.FIREBASE_ADMIN_CLIENT_EMAIL }}
-          FIREBASE_ADMIN_PRIVATE_KEY:  ${{ secret.FIREBASE_ADMIN_PRIVATE_KEY }}
-          WEBSITE_ADDRESS:  ${{ secret.WEBSITE_ADDRESS }}
-          NEXT_PUBLIC_FIREBASE_PROJECT_ID:  ${{ secret.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          node-version: "16.x"
+          FIREBASE_ADMIN_CLIENT_EMAIL: ${{ secrets.FIREBASE_ADMIN_CLIENT_EMAIL }}
+          FIREBASE_ADMIN_PRIVATE_KEY: ${{ secrets.FIREBASE_ADMIN_PRIVATE_KEY }}
+          FIREBASE_ADMIN_PRIVATE_KEY2: mapache
+          WEBSITE_ADDRESS: ${{ secrets.WEBSITE_ADDRESS }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}

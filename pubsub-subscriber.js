@@ -7,6 +7,11 @@ console.log(
   "FIREBASE_ADMIN_PRIVATE_KEY",
   process.env.FIREBASE_ADMIN_PRIVATE_KEY
 );
+console.log(
+  "FIREBASE_ADMIN_PRIVATE_KEY2",
+  process.env.FIREBASE_ADMIN_PRIVATE_KEY2
+);
+
 console.log("WEBSITE_ADDRESS", process.env.WEBSITE_ADDRESS);
 console.log(
   "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
