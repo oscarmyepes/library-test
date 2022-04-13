@@ -12,3 +12,6 @@ console.log(
   "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
   process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
 );
+
+const value = process.env.FIREBASE_ADMIN_CLIENT_EMAIL + "in script";
+console.log("XXXXXXXXXXXXXX", value);
