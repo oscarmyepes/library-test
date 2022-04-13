@@ -21,7 +21,7 @@ jobs:
         run: npm run post-deploy
         env:
           node-version: '16.x'
-          FIREBASE_ADMIN_CLIENT_EMAIL: ${{ secrets.FIREBASE_ADMIN_CLIENT_EMAIL }}
-          FIREBASE_ADMIN_PRIVATE_KEY:  ${{ secrets.FIREBASE_ADMIN_PRIVATE_KEY }}
-          WEBSITE_ADDRESS:  ${{ secrets.WEBSITE_ADDRESS }}
-          NEXT_PUBLIC_FIREBASE_PROJECT_ID:  ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          FIREBASE_ADMIN_CLIENT_EMAIL: ${{ secret.FIREBASE_ADMIN_CLIENT_EMAIL }}
+          FIREBASE_ADMIN_PRIVATE_KEY:  ${{ secret.FIREBASE_ADMIN_PRIVATE_KEY }}
+          WEBSITE_ADDRESS:  ${{ secret.WEBSITE_ADDRESS }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID:  ${{ secret.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
